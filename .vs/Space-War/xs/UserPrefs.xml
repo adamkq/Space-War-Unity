@@ -1,0 +1,37 @@
+﻿<Properties StartupConfiguration="{7F5DD048-C465-EC96-F085-2233BD0CE1C4}|">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Entity.cs">
+    <Files>
+      <File FileName="Assets/Scripts/spawnScript.cs" Line="18" Column="1" />
+      <File FileName="Assets/Scripts/SpawnPointGroup.cs" Line="91" Column="15" />
+      <File FileName="Assets/Scripts/Agent.cs" Line="39" Column="58" />
+      <File FileName="Assets/Scripts/ParallaxCam.cs" Line="35" Column="9" />
+      <File FileName="Assets/Scripts/bulletScript.cs" Line="34" Column="10" />
+      <File FileName="Assets/Scripts/Entity.cs" Line="13" Column="28" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="Space-War" expanded="True">
+            <Node name="Assets" expanded="True">
+              <Node name="Scripts" expanded="True">
+                <Node name="Entity.cs" selected="True" />
+              </Node>
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+      <Pad Id="MonoDevelop.UnitTesting.TestPad">
+        <State name="__root__">
+          <Node name="Space-War" expanded="True" selected="True" />
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="ad771567-704f-4305-abc1-559d61a8bf97" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>
