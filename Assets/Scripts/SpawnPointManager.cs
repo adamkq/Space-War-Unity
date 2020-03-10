@@ -9,7 +9,18 @@ public class SpawnPointManager : MonoBehaviour
     // a) if it is occupied, b) the team it belongs to, and c) the spawn delay
     // this class can then choose an appropriate spawner at random.
 
-    private SpawnPoint[] spScripts;
+    private KeyCode[] alphaKeyCodes =
+    {
+        KeyCode.Alpha0,
+        KeyCode.Alpha1,
+        KeyCode.Alpha2,
+        KeyCode.Alpha3,
+        KeyCode.Alpha4,
+        KeyCode.Alpha5,
+        KeyCode.Alpha6
+    };
+
+    private SpawnPoint[] spawnPoints;
     private readonly System.Random rnd = new System.Random();
 
     public GameObject asteroid;
@@ -19,7 +30,7 @@ public class SpawnPointManager : MonoBehaviour
     void Start()
     {
         // sort all spawns by team
-        spScripts = GetComponentsInChildren<SpawnPoint>();
+        spawnPoints = GetComponentsInChildren<SpawnPoint>();
     }
 
     // Update is called once per frame
@@ -30,13 +41,12 @@ public class SpawnPointManager : MonoBehaviour
 
     void ManualSpawn()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        for (int i = 0; i < alphaKeyCodes.Length; i++)
         {
-            SpawnEntity(enemy, 1);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            SpawnEntity(enemy, 2);
+            if (Input.GetKeyDown(alphaKeyCodes[i]))
+            {
+                SpawnEntity(enemy, (Team)i);
+            }
         }
         if (Input.GetKeyDown(KeyCode.R))
         {
@@ -48,8 +58,9 @@ public class SpawnPointManager : MonoBehaviour
         }
     }
 
-    public void SpawnEntity(GameObject obj, byte team=0)
+    public GameObject SpawnEntity(GameObject obj, Team team= Team.NoTeam)
     {
+        // https://answers.unity.com/questions/710968/how-to-tell-if-a-gameobject-is-an-instance-or-a-pr.html
         // select a suitable spawner at random (if none, just choose an unsuitable one)
         // Order by priority: 1) Team, 2) Unoccupied, 3) Spawn Delay
         // team 0 is the universal team
@@ -60,51 +71,51 @@ public class SpawnPointManager : MonoBehaviour
         GameObject newObj;
         // if no spawns, instantiate at the parent transform
         // this requires an instance of the SPM
-        if (spScripts.Length == 0)
+        if (spawnPoints.Length == 0)
         {
             newObj = Instantiate(obj, transform);
-            Debug.LogWarningFormat("Object {0} (Team {1}) Instantiated at default point.", obj.name, team);
+            Debug.LogWarningFormat("Object {0} (Team {1}) Instantiated at default point of parent {2}", obj.name, team, name);
         }
         else
         {
-            List<SpawnPoint> spScriptsOfTeam = new List<SpawnPoint>();
-            foreach(var script in spScripts)
+            List<SpawnPoint> spawnsOfTeam = new List<SpawnPoint>();
+            // get list of spawns that match the team and that are unoccupied
+            foreach(var sp in spawnPoints)
             {
-                if (team == 0 || script.team == 0 || script.team == team)
+                if (sp.team == team && !sp.IsOccupied())
                 {
-                    spScriptsOfTeam.Add(script);
+                    spawnsOfTeam.Add(sp);
                 }
             }
 
-            // if no eligible spawns, choose any one
-            if (spScriptsOfTeam.Count == 0)
+            // if no eligible spawns, add the universal spawns
+            if (spawnsOfTeam.Count == 0 && team != Team.NoTeam)
             {
-                spScriptsOfTeam = new List<SpawnPoint>(spScripts);
+                foreach (var sp in spawnPoints)
+                {
+                    if (sp.team == Team.NoTeam)
+                    {
+                        spawnsOfTeam.Add(sp);
+                    }
+                }
             }
 
-            // choose random spawn. cycle through list of spawn points twice max
-            int spCount = spScriptsOfTeam.Count;
-            int maxIterations = spCount * 2;
-            int index;
-            SpawnPoint spawnPoint;
-
-            do
+            // if still none, add all spawns
+            if (spawnsOfTeam.Count == 0)
             {
-                maxIterations -= 1;
-                index = rnd.Next(spCount);
-                spawnPoint = spScriptsOfTeam[index];
+                spawnsOfTeam = new List<SpawnPoint>(spawnPoints);
             }
-            while (maxIterations > 0 && spawnPoint.IsOccupied());
 
-            newObj = Instantiate(obj, spawnPoint.gameObject.transform.position, spawnPoint.gameObject.transform.rotation);
+            // choose random spawn from those eligible.
+            Transform tx = spawnsOfTeam[rnd.Next(spawnsOfTeam.Count)].gameObject.transform;
+
+            newObj = Instantiate(obj, tx.position, tx.rotation);
         }
 
         // prevent an extra (clone) suffix
         newObj.name = obj.name;
         newObj.GetComponent<Entity>().team = team;
-        
 
-        // group in hierarchy
-        //newObj.transform.SetParent(GameObject.Find("Spawned Objects").transform);
+        return newObj;
     }
 }

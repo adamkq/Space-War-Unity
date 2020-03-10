@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 2805905298615773622}
   - component: {fileID: 5337888224955870942}
   - component: {fileID: 670736374128597803}
+  - component: {fileID: 1905248742638410023}
   m_Layer: 0
   m_Name: player
   m_TagString: Untagged
@@ -147,8 +148,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2c4d4351fe2543de99a155869d3448c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  team: 0
+  sprite: {fileID: 0}
+  spriteColor: {r: 0, g: 0, b: 0, a: 0}
   basic:
-    playerControlled: 0
+    playerControlled: 1
+    invuln: 1
     health: 1
     score: 0
   dynamics:
@@ -156,21 +161,24 @@ MonoBehaviour:
     accFwdLimit: 10
     accRevLimit: -5
     accTurnLimit: 2
-  targeting:
-    target: {fileID: 0}
-  guidance:
-    PNCoeff: 3
-  autopilot:
-    setPointSpeed: 10
-    gainThrottle: 10
-    gainTurnP: 10
-    gainTurnI: 5
-    gainTurnD: 0.2
   weapons:
     pacifist: 0
     bullet: {fileID: 5946398614584998553, guid: 52f58d9ad447b4e6dbaffc9ca1dd34b7,
       type: 3}
     bulletROF: 0
+    bulletSpread: 0
     bomb: {fileID: 0}
     numberOfBombs: 0
     laser: {fileID: 0}
+--- !u!114 &1905248742638410023
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4555313195032591504}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3db46a0eaa2d4ab5a23ef5895d4043c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

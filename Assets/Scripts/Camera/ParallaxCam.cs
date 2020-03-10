@@ -21,6 +21,8 @@ public class ParallaxCam : MonoBehaviour
         speedScaleY = scrollSpeed / transform.localScale.y;
 
         meshRend = GetComponent<MeshRenderer>();
+        meshRend.sortingLayerName = "Background";
+
         if (alphaValue >= 0f)
         {
             meshRend.material.color = new Color(1f, 1f, 1f, alphaValue);

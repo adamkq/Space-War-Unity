@@ -12,11 +12,11 @@ GameObject:
   - component: {fileID: 1637459938283114189}
   - component: {fileID: 1637459938283114195}
   - component: {fileID: 1637459938283114190}
-  - component: {fileID: 1637459938283114191}
   - component: {fileID: 1637459938283114184}
+  - component: {fileID: -8792950323252677708}
   m_Layer: 0
   m_Name: enemy
-  m_TagString: Untagged
+  m_TagString: Agent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -119,22 +119,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.48
---- !u!114 &1637459938283114191
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1637459938283114185}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4dd4136b31c804244b7b6d2204698908, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  team: 0
-  sprite: {fileID: 21300000, guid: 46a5361ac933146febf79535b67405e7, type: 3}
-  spriteColor: {r: 1, g: 0, b: 0, a: 1}
+  m_Radius: 0.4
 --- !u!114 &1637459938283114184
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -147,30 +132,47 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2c4d4351fe2543de99a155869d3448c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  team: 0
+  sprite: {fileID: 21300000, guid: 46a5361ac933146febf79535b67405e7, type: 3}
+  spriteColor: {r: 1, g: 0, b: 0, a: 1}
   basic:
     playerControlled: 0
+    invuln: 0
     health: 1
     score: 0
-  dyn:
-    speedLimit: 0
+  dynamics:
+    speedLimit: 10
     accFwdLimit: 10
-    accRevLimit: 5
+    accRevLimit: -5
     accTurnLimit: 2
-  tgt:
-    target: {fileID: 0}
-  guidance:
-    leadFactor: 3
-  autopilot:
-    setPointSpeed: 5
-    gainThrottle: 10
-    gainTurnP: 10
-    gainTurnI: 5
-    gainTurnD: 0.2
   weapons:
     pacifist: 0
     bullet: {fileID: 5946398614584998553, guid: 52f58d9ad447b4e6dbaffc9ca1dd34b7,
       type: 3}
     bulletROF: 2
+    bulletSpread: 3
     bomb: {fileID: 0}
     numberOfBombs: 0
     laser: {fileID: 0}
+--- !u!114 &-8792950323252677708
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1637459938283114185}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9dc464833b6e145cc903b122113fd9da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targeting:
+    target: {fileID: 0}
+    mode: 0
+  guidance:
+    setPointSpeed: 0
+  autopilot:
+    gainThrottle: 10
+    gainTurnP: 10
+    gainTurnI: 5
+    gainTurnD: 0.5

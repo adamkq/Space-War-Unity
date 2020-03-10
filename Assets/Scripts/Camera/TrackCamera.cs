@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class main_camera_script : MonoBehaviour
+public class TrackCamera : MonoBehaviour
 {
-    public GameObject target; // the player sprite
+    public GameObject target; // the player object
 
     private Camera mainCamera;
     private Vector2 mousePos;
@@ -37,7 +37,7 @@ public class main_camera_script : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
-            ChangeTarget();
+            //ChangeTarget(target);
         }
 
         if (target)
@@ -61,8 +61,10 @@ public class main_camera_script : MonoBehaviour
         mainCamera.orthographicSize = Mathf.Clamp(mainCamera.orthographicSize, 5.0f, 20.0f);
     }
 
-    void ChangeTarget()
+    public void ChangeTarget(GameObject newTarget)
     {
         // switch camera to the agent that was clicked on
+        target = newTarget;
+        rb2D = target.GetComponent<Rigidbody2D>();
     }
 }

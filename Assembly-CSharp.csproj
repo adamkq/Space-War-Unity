@@ -63,15 +63,20 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\Agent.cs" />
-    <Compile Include="Assets\Scripts\asteroidScript.cs" />
-    <Compile Include="Assets\Scripts\Entity.cs" />
+    <Compile Include="Assets\Scripts\Camera\ParallaxCam.cs" />
+    <Compile Include="Assets\Scripts\Camera\TrackCamera.cs" />
+    <Compile Include="Assets\Scripts\Entities\Agent.cs" />
+    <Compile Include="Assets\Scripts\Entities\AIController.cs" />
+    <Compile Include="Assets\Scripts\Entities\Asteroid.cs" />
+    <Compile Include="Assets\Scripts\Entities\BlackHole.cs" />
+    <Compile Include="Assets\Scripts\Entities\Entity.cs" />
+    <Compile Include="Assets\Scripts\Entities\PlayerController.cs" />
     <Compile Include="Assets\Scripts\GetEdgeColliderFromLine.cs" />
-    <Compile Include="Assets\Scripts\main_camera_script.cs" />
-    <Compile Include="Assets\Scripts\ParallaxCam.cs" />
+    <Compile Include="Assets\Scripts\Highlighter.cs" />
     <Compile Include="Assets\Scripts\Projectile.cs" />
     <Compile Include="Assets\Scripts\SpawnPoint.cs" />
     <Compile Include="Assets\Scripts\SpawnPointManager.cs" />
+    <Compile Include="Assets\Scripts\Teams.cs" />
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>/Users/adamkq/Documents/Programming/Unity/Space-War/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
     </Reference>

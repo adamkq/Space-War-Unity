@@ -7,17 +7,20 @@ using UnityEngine;
 
 public class Entity : MonoBehaviour
 {
+    
+
     // https://stackoverflow.com/questions/295104/what-is-the-difference-between-a-field-and-a-property
     private SpawnPointManager spm;
     private SpriteRenderer spriteRend;
     private Collider2D c2D;
+    // dynamic rigidbody?
 
-    public byte team;
+    public Team team;
+
     public Sprite sprite;
     public Color spriteColor;
 
-    // Start is called before the first frame update
-    void Start()
+    protected virtual void Start()
     {
         spm = GameObject.Find("Spawn Point Mgr").GetComponent<SpawnPointManager>();
         spriteRend = GetComponent<SpriteRenderer>();
@@ -26,12 +29,13 @@ public class Entity : MonoBehaviour
         if (sprite)
         {
             spriteRend.sprite = sprite;
-            spriteRend.color = spriteColor;
+            if (team != Team.NoTeam)
+            {
+                spriteRend.color = Teams.teamColors[team];
+            }
         }
-
     }
 
-    // Update is called once per frame
     void Update()
     {
         
@@ -42,8 +46,14 @@ public class Entity : MonoBehaviour
         
     }
 
-    public void Spawn()
+    public void Respawn()
     {
-        spm.SpawnEntity(gameObject, team);
+        GameObject newObj = spm.SpawnEntity(gameObject, team);
+        TrackCamera camera = GameObject.Find("Main Camera").GetComponent<TrackCamera>();
+
+        if (camera.target == gameObject)
+        {
+            camera.ChangeTarget(newObj);
+        }
     }
 }
