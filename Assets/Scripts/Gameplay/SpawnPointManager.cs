@@ -5,8 +5,7 @@ using UnityEngine;
 public class SpawnPointManager : MonoBehaviour
 {
     // this class manages all the spawn points.
-    // in general the exact location of the spawn point is needed, only:
-    // a) if it is occupied, b) the team it belongs to, and c) the spawn delay
+    // spawnpoints selected based on a) if it is occupied, b) the team it belongs to
     // this class can then choose an appropriate spawner at random.
 
     private KeyCode[] alphaKeyCodes =
@@ -21,7 +20,6 @@ public class SpawnPointManager : MonoBehaviour
     };
 
     private SpawnPoint[] spawnPoints;
-    private readonly System.Random rnd = new System.Random();
 
     public GameObject asteroid;
     public GameObject enemy;
@@ -55,6 +53,7 @@ public class SpawnPointManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.A))
         {
             SpawnEntity(asteroid);
+            Debug.LogFormat("Total Asteroids: {0}", Asteroid.NumberInstantiated);
         }
     }
 
@@ -106,8 +105,8 @@ public class SpawnPointManager : MonoBehaviour
                 spawnsOfTeam = new List<SpawnPoint>(spawnPoints);
             }
 
-            // choose random spawn from those eligible.
-            Transform tx = spawnsOfTeam[rnd.Next(spawnsOfTeam.Count)].gameObject.transform;
+            // choose random spawn from selection
+            Transform tx = spawnsOfTeam[Random.Range(0, spawnsOfTeam.Count)].gameObject.transform;
 
             newObj = Instantiate(obj, tx.position, tx.rotation);
         }

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
+    private static readonly HashSet<string> exemptTriggers = new HashSet<string>() { "Projectile", "Respawn", "Waypoint", "AreaEffect" };
     private Rigidbody2D rb2D;
     private float timeFired;
 
@@ -15,6 +16,7 @@ public class Projectile : MonoBehaviour
 
     void Start()
     {
+        transform.parent = GameObject.Find("Projectiles").transform;
         rb2D = GetComponent<Rigidbody2D>();
         rb2D.velocity = transform.up * speed;
         timeFired = Time.time;
@@ -22,13 +24,6 @@ public class Projectile : MonoBehaviour
 
     private void Update()
     {
-        // change orientation based on bounce, black holes, etc
-        float rot = Mathf.Atan2(rb2D.velocity.y, rb2D.velocity.x) * Mathf.Rad2Deg - 90f;
-        if (Mathf.Abs(rb2D.rotation - rot) > 0.1f)
-        {
-            rb2D.SetRotation(rot);
-        }
-
         if (Time.time - timeFired > lifetime)
         {
             Terminate();
@@ -38,11 +33,18 @@ public class Projectile : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         GameObject other = collision.gameObject;
-        // TODO: Implement wall types. Some walls will terminate the projectile, others will bounce it
-        if (other.tag != "Respawn" && other.tag != "Projectile" && other.tag != "AreaEffect")
+        // projectile does not collide with Agent that fired it, or "invisible" objects
+        // what if FiredBy does not exist?
+        if (other != FiredBy && !exemptTriggers.Contains(other.tag))
         {
             Terminate();
         }
+    }
+
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        // change orientation based on bounce, black holes, etc
+        rb2D.SetRotation(Mathf.Atan2(rb2D.velocity.y, rb2D.velocity.x) * Mathf.Rad2Deg - 90f);
     }
 
     private void Terminate()

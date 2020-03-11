@@ -7,7 +7,8 @@ using UnityEngine;
 
 public class Entity : MonoBehaviour
 {
-    
+    // https://github.com/JetBrains/resharper-unity/wiki/Performance-critical-context-and-costly-methods
+
 
     // https://stackoverflow.com/questions/295104/what-is-the-difference-between-a-field-and-a-property
     private SpawnPointManager spm;

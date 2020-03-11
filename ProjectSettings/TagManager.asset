@@ -8,6 +8,7 @@ TagManager:
   - AreaEffect
   - Agent
   - Hazard
+  - Waypoint
   layers:
   - Default
   - TransparentFX

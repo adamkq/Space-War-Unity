@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 2678998183707806306}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2, y: 2, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -95,13 +95,13 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0
+  m_LinearDrag: 0.01
+  m_AngularDrag: 0.01
   m_GravityScale: 0
   m_Material: {fileID: 0}
   m_Interpolate: 1
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 0
 --- !u!58 &-4584306044650926919
 CircleCollider2D:
@@ -113,7 +113,7 @@ CircleCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -134,6 +134,13 @@ MonoBehaviour:
   team: 0
   sprite: {fileID: 0}
   spriteColor: {r: 0, g: 0, b: 0, a: 0}
+  basic:
+    health: 8
+    impactDamageMult: 0.5
   dynamics:
-    maxLinearVel: 5
+    maxLinearVel: 10
     maxAngularVel: 200
+  frag:
+    maxGenerations: 4
+    maxFrags: 4
+    minScale: 0.1

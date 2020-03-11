@@ -19,15 +19,7 @@ public class SpawnPoint : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        OnValidate();
-        line.enabled = false;
         radius = GetComponent<CircleCollider2D>().radius;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        //occupied = false;
     }
 
     private void OnValidate()
@@ -36,11 +28,7 @@ public class SpawnPoint : MonoBehaviour
         GetComponent<CircleCollider2D>().radius = radius;
 
         line = GetComponent<LineRenderer>();
-        line.colorGradient.mode = GradientMode.Fixed;
-        line.startColor = Teams.teamColors[team];
-        line.endColor = line.startColor;
-
-        DrawCircle(GetComponent<CircleCollider2D>().radius);
+        GetComponent<Highlighter>().DrawPolygon(line, radius, Teams.teamColors[team], 18);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -61,19 +49,5 @@ public class SpawnPoint : MonoBehaviour
     public bool IsOccupied()
     {
         return occupied;
-    }
-    
-    void DrawCircle(float radius)
-    {
-        int angleIncrement = 10; // degrees; higher = lower res circle
-        line.positionCount = 360/angleIncrement;
-
-        for (int i = 0; i < line.positionCount; i++)
-        {
-            float angle = (float)i * angleIncrement * Mathf.Deg2Rad;
-            Vector3 pos = new Vector3(transform.position.x + radius * Mathf.Cos(angle), transform.position.y + radius * Mathf.Sin(angle), transform.position.z);
-            line.SetPosition(i, pos);
-        }
-        
     }
 }

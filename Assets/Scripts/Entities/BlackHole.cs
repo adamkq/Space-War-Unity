@@ -12,22 +12,18 @@ public class BlackHole : MonoBehaviour
 
     public float singularityRadius = 1f;
     public float areaEffectRadius = 2f;
-   
-    void Start()
+    public float forceMagnitude = -25f;
+
+    private void Awake()
     {
         cc2Ds = GetComponentsInChildren<CircleCollider2D>();
-        pe2D = GetComponentInChildren<PointEffector2D>();
-    }
-
-    void Update()
-    {
-        
     }
 
     private void OnValidate()
     {
         cc2Ds = GetComponentsInChildren<CircleCollider2D>();
         ps = GetComponent<ParticleSystem>();
+        pe2D = GetComponentInChildren<PointEffector2D>();
 
         foreach (CircleCollider2D cc2D in cc2Ds)
         {
@@ -41,6 +37,8 @@ public class BlackHole : MonoBehaviour
             }
         }
 
+        pe2D.forceMagnitude = forceMagnitude;
+
         if (ps)
         {
             // arbitrary
@@ -48,6 +46,7 @@ public class BlackHole : MonoBehaviour
             pss.radius = (singularityRadius + areaEffectRadius) / 2f;
             pss.radiusThickness = 1 - singularityRadius / pss.radius;
 
+            // delete particles inside the singularity
             ps.trigger.SetCollider(0, cc2Ds[0]);
         }
     }
@@ -74,5 +73,5 @@ public class BlackHole : MonoBehaviour
             
             rb2Dk.velocity += relPos * pseudoForce;
         }
-    }
+    } 
 }

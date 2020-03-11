@@ -71,12 +71,15 @@
     <Compile Include="Assets\Scripts\Entities\BlackHole.cs" />
     <Compile Include="Assets\Scripts\Entities\Entity.cs" />
     <Compile Include="Assets\Scripts\Entities\PlayerController.cs" />
-    <Compile Include="Assets\Scripts\GetEdgeColliderFromLine.cs" />
-    <Compile Include="Assets\Scripts\Highlighter.cs" />
-    <Compile Include="Assets\Scripts\Projectile.cs" />
-    <Compile Include="Assets\Scripts\SpawnPoint.cs" />
-    <Compile Include="Assets\Scripts\SpawnPointManager.cs" />
-    <Compile Include="Assets\Scripts\Teams.cs" />
+    <Compile Include="Assets\Scripts\Gameplay\GetEdgeColliderFromLine.cs" />
+    <Compile Include="Assets\Scripts\Gameplay\SpawnPoint.cs" />
+    <Compile Include="Assets\Scripts\Gameplay\SpawnPointManager.cs" />
+    <Compile Include="Assets\Scripts\Gameplay\Teams.cs" />
+    <Compile Include="Assets\Scripts\Gameplay\Waypoint.cs" />
+    <Compile Include="Assets\Scripts\Gameplay\WaypointManager.cs" />
+    <Compile Include="Assets\Scripts\Helpers\Highlighter.cs" />
+    <Compile Include="Assets\Scripts\Helpers\Summoner.cs" />
+    <Compile Include="Assets\Scripts\Projectiles\Projectile.cs" />
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>/Users/adamkq/Documents/Programming/Unity/Space-War/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
     </Reference>

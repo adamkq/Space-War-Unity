@@ -103,7 +103,7 @@ public class Agent : Entity
         }
 
         basic.health += dHealth;
-        if (basic.health <= 0)
+        if (basic.health < 1)
         {
             Kill();
         }
@@ -142,17 +142,17 @@ public class Agent : Entity
         }
         weapons.timeLastFired = Time.time;
 
-        // offset
-        GameObject bullet = Instantiate(weapons.bullet, transform.position + (transform.up * 1f), transform.rotation);
+        // initialize and add spread
+        GameObject bullet = Instantiate(weapons.bullet, transform.position, transform.rotation);
+        bullet.transform.Rotate(new Vector3(0f, 0f, Random.Range(-weapons.bulletSpread, weapons.bulletSpread)));
 
         // speed vector add: cross(A, B) = AB cos(angle(A,B))
-        Vector2 va = dynamics.rb2D.velocity;
-        bullet.GetComponent<Projectile>().speed += Vector2.Dot(transform.up, va);
-        bullet.GetComponent<Projectile>().speed = Mathf.Max(bullet.GetComponent<Projectile>().speed, 1f);
+        // do not fire backwards
+        Projectile _bullet = bullet.GetComponent<Projectile>();
+        _bullet.speed += Vector2.Dot(transform.up, dynamics.rb2D.velocity);
+        _bullet.speed = Mathf.Max(_bullet.speed, 1f);
 
-        bullet.transform.Rotate(new Vector3(0f, 0f, Random.Range(-weapons.bulletSpread, weapons.bulletSpread)));
-        bullet.transform.parent = GameObject.Find("Projectiles").transform;
-
-        bullet.GetComponent<Projectile>().FiredBy = gameObject;
+        // ID bullet with Agent
+        _bullet.FiredBy = gameObject;
     }
 }

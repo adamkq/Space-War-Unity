@@ -3,7 +3,7 @@ A space shooter made in Unity 2019.
 
 ## Controls
 * Arrow Keys: Maneuver
-* 1, 2: Spawn enemies on respective teams
+* 0-6: Spawn agents on respective teams
 * A: Spawn asteroid
 * Space: fire bullets
 * B: hard brake
