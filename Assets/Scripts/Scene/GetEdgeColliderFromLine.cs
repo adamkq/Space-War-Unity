@@ -26,7 +26,7 @@ public class GetEdgeColliderFromLine : MonoBehaviour
     public PhysicsMaterial2D mat2D; // specify friction or bounce in the material
 
     // Start is called before the first frame update
-    void Start()
+    void OnValidate()
     {
         line = GetComponent<LineRenderer>();
         numVertices = line.positionCount;

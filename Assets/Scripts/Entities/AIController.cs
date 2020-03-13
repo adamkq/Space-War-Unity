@@ -12,12 +12,17 @@ public class AIController : MonoBehaviour
     private Agent.Dynamics dyn;
 
     [System.Serializable]
-    // TODO: Flesh this out. Some overall descriptions:
-    // Aggressive: Default, heads directly to target at max speed
-    // Defensive: Stays near score objects, or if there are none, get to just within LOS of target
-    // Ambush: Attempts to place itself in the likely path of its target, then wait until target is in range to attack
-    // Patrol: Wanders to waypoints in a looping sequence
-    public enum Modes { Aggressive, Defensive, Ambush, Patrol };
+    // Mission types:
+    // Attack (pick an Agent and try to kill it, or if None are found, go for the game objective or powerups)
+    // Defend (pick a score object and stay within a certain radius)
+    // Ambush (pick a wp that has lots of hostile Agents either facing it or near it, and camp there)
+    // Heal (if low health, find a health powerup. If not, pick a friendly Agent and stay near it)
+    //
+    // Baseline rules
+    // 1. Kill nearby hostiles
+    // 2. If no hostiles nearby and no powerups in possession, go for powerups
+    // 3. Shoot at, or avoid, hazards
+    public enum Mission { Attack, Defend, Ambush, Heal };
 
     [System.Serializable]
     public class Targeting
@@ -26,24 +31,20 @@ public class AIController : MonoBehaviour
         // These are used by other subsystems to actually move the agent
         internal Rigidbody2D rb2D; // used by guidance to get closing vel
 
-        public GameObject target; // enemy will home in on this
-        public Modes mode;
+        public GameObject target; // Agent will home in on this
+        public Mission mission;
 
     }
 
     [System.Serializable]
     public class Guidance
     {
-        // Finds point (or sequence of points) to go to based on relative target location, raycasts, etc. Ignores dynamics.
-        // May replace with navmesh
-
-        // target pos in relation to enemy pos
+        // Finds point (or sequence of points) to go to based on relative target location
+        internal List<Vector2> wpsToTarget = new List<Vector2>();
         internal Vector2 LOS = Vector3.zero;
-        internal Vector2 relVelocity = Vector2.zero;
-        internal Vector2 accCommand = Vector2.zero;
-        internal float angleLOS;
+        internal float angleLOS = 0f;
 
-        // gains
+        // will replace with automatic method
         public float setPointSpeed;
     }
 
@@ -63,10 +64,15 @@ public class AIController : MonoBehaviour
     public Guidance guidance;
     public Autopilot autopilot;
 
-    void Start()
+    void Awake()
     {
         agent = GetComponent<Agent>();
         dyn = agent.dynamics;
+    }
+
+    void Start()
+    {
+        
     }
 
     // since these fcns involves physics measurements (e.g. rb2D velocities), they are called in FixedUpdate
@@ -81,12 +87,16 @@ public class AIController : MonoBehaviour
     void UpdateTargeting()
     {
         // high-level, takes into account other Agent locations, health, objectives, etc
+        // will take mission from a "Team Manager" class (e.g. Hunt, Defend, Find Health, etc, see above)
+        // will also keep track of those Agents which are detectable once TODO stealth mechanics are implemented
+
         if (targeting.target)
         {
             // presently, only change targets if the previous one is destroyed
             Debug.DrawLine(transform.position, targeting.target.transform.position, Color.blue);
             return;
         }
+        
         Entity[] agents = GameObject.Find("Agents").GetComponentsInChildren<Entity>();
 
         foreach (var agent in agents)
@@ -105,7 +115,18 @@ public class AIController : MonoBehaviour
     void UpdateGuidance()
     {
         // mid-level, plots a set of waypoints to the objective target. Also sets speed for autopilot.
-        // https://www.youtube.com/watch?v=jvtFUfJ6CP8
+        // if no target, clear the wpList and return
+        // if no LOS to target, get the closest wpLOS to target (or just check this once per second)
+        //      if that node has changed:
+        //          get the closest wpLOS to self
+        //          get the wp path and save it
+        //      if not, prune the wpList until only one node has LOS
+        // if LOS to target, set wpLOS to just [target] and use the pseudo-Pro Nav code already written
+        //
+        // Set Point Speed:
+        // if no LOS to target, set max
+        // scale based on turn angle and distance to next wp (e.g. the Agent should slow down in advance of a sharp turn)
+        // if LOS to target, then set speed based on whatever "radius" from the target that the Agent has chosen
 
 
         if (targeting.target)

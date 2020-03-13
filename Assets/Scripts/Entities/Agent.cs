@@ -10,14 +10,21 @@ public class Agent : Entity
     // at the player's whim, an Agent should be able to switch between AI and manual control
 
     [System.Serializable]
+    // Agents will have different ship types to give the game a little more variety
+    // These will be distinguished by sprite and by parameter values rather than being split into classes
+    public enum ShipTypes { Assault, Sentry, Infiltrator, Mechanic, Sapper };
+
+    [System.Serializable]
     public class Basic
     {
+        // basic info for an Agent
         internal int health;
-        // basic info for a character
+        
         public bool playerControlled;
         public bool invuln;
         public int startHealth;
         public int score = 0;
+        public ShipTypes shipType;
     }
 
     [System.Serializable]
@@ -69,6 +76,7 @@ public class Agent : Entity
     private void FixedUpdate()
     {
         Actuate();
+        if (basic.health < 1) Kill();
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -97,20 +105,17 @@ public class Agent : Entity
 
     void IncrementHealth(int dHealth)
     {
-        if (basic.invuln)
+        if (basic.invuln && dHealth < 0)
         {
             return;
         }
 
         basic.health += dHealth;
-        if (basic.health < 1)
-        {
-            Kill();
-        }
     }
 
     void Kill()
     {
+        // TODO: Implement spawn delay
         Respawn();
         Destroy(gameObject);
     }

@@ -14,11 +14,6 @@ public class BlackHole : MonoBehaviour
     public float areaEffectRadius = 2f;
     public float forceMagnitude = -25f;
 
-    private void Awake()
-    {
-        cc2Ds = GetComponentsInChildren<CircleCollider2D>();
-    }
-
     private void OnValidate()
     {
         cc2Ds = GetComponentsInChildren<CircleCollider2D>();
@@ -56,22 +51,9 @@ public class BlackHole : MonoBehaviour
         // will likely destroy the object, but this should be called in each relevant object
     }
 
-    private void OnTriggerStay2D(Collider2D collision)
+    private void OnDrawGizmos()
     {
-        // apply a pseudo-force to every kinematic rb2D in the area of influence
-        GameObject other = collision.gameObject;
-        Rigidbody2D rb2Dk = other.GetComponent<Rigidbody2D>();
-        if (rb2Dk && rb2Dk.isKinematic)
-        {
-            float forceMag = pe2D.forceMagnitude;
-            float pseudoForce;
-            Vector2 relPos = rb2Dk.worldCenterOfMass - (Vector2)transform.position;
-            relPos.Normalize();
-
-            // inv linear
-            pseudoForce = forceMag / Vector3.Magnitude(relPos) * Time.fixedDeltaTime;
-            
-            rb2Dk.velocity += relPos * pseudoForce;
-        }
-    } 
+        Gizmos.DrawWireSphere(transform.position, areaEffectRadius);
+        
+    }
 }

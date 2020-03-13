@@ -70,16 +70,19 @@
     <Compile Include="Assets\Scripts\Entities\Asteroid.cs" />
     <Compile Include="Assets\Scripts\Entities\BlackHole.cs" />
     <Compile Include="Assets\Scripts\Entities\Entity.cs" />
+    <Compile Include="Assets\Scripts\Entities\NeutronStar.cs" />
     <Compile Include="Assets\Scripts\Entities\PlayerController.cs" />
-    <Compile Include="Assets\Scripts\Gameplay\GetEdgeColliderFromLine.cs" />
-    <Compile Include="Assets\Scripts\Gameplay\SpawnPoint.cs" />
-    <Compile Include="Assets\Scripts\Gameplay\SpawnPointManager.cs" />
     <Compile Include="Assets\Scripts\Gameplay\Teams.cs" />
-    <Compile Include="Assets\Scripts\Gameplay\Waypoint.cs" />
-    <Compile Include="Assets\Scripts\Gameplay\WaypointManager.cs" />
     <Compile Include="Assets\Scripts\Helpers\Highlighter.cs" />
+    <Compile Include="Assets\Scripts\Helpers\Repulsor.cs" />
     <Compile Include="Assets\Scripts\Helpers\Summoner.cs" />
+    <Compile Include="Assets\Scripts\Projectiles\KinematicAreaEffect.cs" />
     <Compile Include="Assets\Scripts\Projectiles\Projectile.cs" />
+    <Compile Include="Assets\Scripts\Scene\GetEdgeColliderFromLine.cs" />
+    <Compile Include="Assets\Scripts\Scene\SpawnPoint.cs" />
+    <Compile Include="Assets\Scripts\Scene\SpawnPointManager.cs" />
+    <Compile Include="Assets\Scripts\Scene\Waypoint.cs" />
+    <Compile Include="Assets\Scripts\Scene\WaypointManager.cs" />
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>/Users/adamkq/Documents/Programming/Unity/Space-War/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
     </Reference>

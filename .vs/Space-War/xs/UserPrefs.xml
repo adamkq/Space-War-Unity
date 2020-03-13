@@ -1,14 +1,16 @@
 ﻿<Properties StartupConfiguration="{7F5DD048-C465-EC96-F085-2233BD0CE1C4}|">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Projectiles/Projectile.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Projectiles/KinematicAreaEffect.cs">
     <Files>
-      <File FileName="Assets/Scripts/Entities/Agent.cs" Line="144" Column="1" />
-      <File FileName="Assets/Scripts/Entities/AIController.cs" Line="156" Column="20" />
-      <File FileName="Assets/Scripts/SpawnPointManager.cs" Line="56" Column="53" />
-      <File FileName="Assets/Scripts/SpawnPoint.cs" Line="1" Column="1" />
-      <File FileName="Assets/Waypoint.cs" Line="37" Column="14" />
-      <File FileName="Assets/WaypointManager.cs" Line="18" Column="95" />
-      <File FileName="Assets/Scripts/Helpers/Highlighter.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Projectiles/Projectile.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/Entities/Agent.cs" Line="35" Column="10" />
+      <File FileName="Assets/Scripts/Entities/AIController.cs" Line="88" Column="6" />
+      <File FileName="Assets/Scripts/Projectiles/Projectile.cs" Line="37" Column="43" />
+      <File FileName="Assets/Scripts/Scene/Waypoint.cs" Line="27" Column="14" />
+      <File FileName="Assets/Scripts/Scene/WaypointManager.cs" Line="171" Column="108" />
+      <File FileName="Assets/Scripts/Entities/PlayerController.cs" Line="13" Column="17" />
+      <File FileName="Assets/Scripts/Scene/SpawnPointManager.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/Entities/NeutronStar.cs" Line="17" Column="91" />
+      <File FileName="Assets/Scripts/Entities/BlackHole.cs" Line="16" Column="1" />
+      <File FileName="Assets/Scripts/Projectiles/KinematicAreaEffect.cs" Line="7" Column="17" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -21,8 +23,9 @@
                 <Node name="Gameplay" expanded="True" />
                 <Node name="Helpers" expanded="True" />
                 <Node name="Projectiles" expanded="True">
-                  <Node name="Projectile.cs" selected="True" />
+                  <Node name="KinematicAreaEffect.cs" selected="True" />
                 </Node>
+                <Node name="Scene" expanded="True" />
               </Node>
             </Node>
           </Node>

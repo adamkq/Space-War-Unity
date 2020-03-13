@@ -138,8 +138,9 @@ MonoBehaviour:
   basic:
     playerControlled: 0
     invuln: 0
-    health: 1
+    startHealth: 1
     score: 0
+    shipType: 0
   dynamics:
     speedLimit: 10
     accFwdLimit: 10
@@ -168,7 +169,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targeting:
     target: {fileID: 0}
-    mode: 0
+    mission: 0
   guidance:
     setPointSpeed: 0
   autopilot:

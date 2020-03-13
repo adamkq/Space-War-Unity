@@ -43,14 +43,17 @@ public class SpawnPointManager : MonoBehaviour
         {
             if (Input.GetKeyDown(alphaKeyCodes[i]))
             {
-                SpawnEntity(enemy, (Team)i);
+                if (Input.GetKey(KeyCode.LeftShift))
+                {
+                    Destroy(GameObject.Find("enemy"));
+                }
+                else
+                {
+                    SpawnEntity(enemy, (Team)i);
+                }
             }
         }
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            Destroy(GameObject.Find("enemy"));
-        }
-        if (Input.GetKeyDown(KeyCode.A))
+        if (Input.GetKey(KeyCode.A))
         {
             SpawnEntity(asteroid);
             Debug.LogFormat("Total Asteroids: {0}", Asteroid.NumberInstantiated);

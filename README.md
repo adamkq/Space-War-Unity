@@ -7,6 +7,7 @@ A space shooter made in Unity 2019.
 * A: Spawn asteroid
 * Space: fire bullets
 * B: hard brake
+* S: Summon (script on gameObject w/ rigidbody)
 
 ## Features To Be Added
 * AI Agents: waypoint finding

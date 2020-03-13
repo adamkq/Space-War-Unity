@@ -14,9 +14,13 @@ public class Asteroid : Entity
     [System.Serializable]
     public class Basic
     {
-        public int health = 8;
+        internal int health;
+
+        public int startHealth = 8;
         [Tooltip("Scales self-damage due to relative velocity.")]
         public float impactDamageMult = 0.5f;
+        [Tooltip("Scales self-damage due to relative velocity.")]
+        public float impactVelThreshold = 0.5f;
     }
     
 
@@ -34,7 +38,6 @@ public class Asteroid : Entity
     {
         // how should the fragments be generated
         // fragments are scaled based on inverse of number of frags
-        internal bool makeFrags; // if true, the asteroid will self-destruct
 
         [Tooltip("Max number of times a parent asteroid can fragment.")]
         public int maxGenerations = 3;
@@ -42,7 +45,6 @@ public class Asteroid : Entity
         public int maxFrags = 4;
         [Tooltip("Min scale below which no asteroid fragments will be made.")]
         public float minScale = 0.2f;
-
     }
 
     public Basic basic;
@@ -54,6 +56,8 @@ public class Asteroid : Entity
         NumberInstantiated += 1;
         dynamics.rb2D = GetComponent<Rigidbody2D>();
         InitializeVelocity();
+
+        basic.health = basic.startHealth;
     }
 
     protected override void Start()
@@ -69,13 +73,8 @@ public class Asteroid : Entity
 
     private void FixedUpdate()
     {
-        // used to synchronize object creation/destruction with the physics engine
-        if (frag.makeFrags)
-        {
-            frag.makeFrags = false;
-            Fragment();
-        }
-
+        // synchronize object creation/destruction with the physics engine
+        if (basic.health < 1) Fragment();
     }
 
     private void OnValidate()
@@ -83,6 +82,7 @@ public class Asteroid : Entity
         // upper bound on number of frags = pow(maxFrags, maxGenerations)
         // should be under absolute limit
         // QED: maxFrags = pow(limit, 1/maxGen)
+        basic.startHealth = Mathf.Max(basic.startHealth, 1);
         frag.maxGenerations = Mathf.Clamp(frag.maxGenerations, 0, (int)Mathf.Log(absoluteLimit, 2));
         frag.maxFrags = Mathf.Clamp(frag.maxFrags, 2, (int)Mathf.Pow(absoluteLimit, 1f/Mathf.Max(frag.maxGenerations, 1)));
         frag.minScale = Mathf.Clamp01(frag.minScale);
@@ -100,26 +100,20 @@ public class Asteroid : Entity
     private void OnCollisionEnter2D(Collision2D collision)
     {
         GameObject other = collision.gameObject;
-        // TODO: Get damage function based on velocity
-        if (other.tag == "Agent")
-        {
-            int dHealth = (int)Mathf.Min(-collision.relativeVelocity.magnitude * basic.impactDamageMult, 0);
-            IncrementHealth(dHealth);
-        }
+        if (other.tag == "Agent") ApplyImpactDamage(collision.relativeVelocity.magnitude);
 
-        if (other.name.Contains("Black Hole"))
-        {
-            frag.makeFrags = true;
-        }
+        if (!(other.tag == "Hazard")) return;
 
-        // keep large numbers of small asteroids from piling up and turning the physics engine to molasses
+        if (other.name.Contains("Black Hole")) IncrementHealth(-999);
+
+        if (other.name.Contains("Neutron")) IncrementHealth(-999);
+
+        // inter-asteroid collisions
         if (other.name.Contains("asteroid"))
         {
-            // the higher the coefficient is, the more asteroids get eliminated. in theory the coeff could be as low as 1.25 (for frags = 2)
-            if (transform.localScale.x < 1.5 * frag.minScale)
-            {
-                frag.makeFrags = true;
-            }
+            // keep large numbers of small asteroids from piling up and turning the physics engine to molasses
+            // coeff corresponds to minimum scalingFactor of about 3 frags
+            if (0.6f * transform.localScale.x < frag.minScale) IncrementHealth(-999);
         }
     }
 
@@ -135,23 +129,28 @@ public class Asteroid : Entity
         dynamics.rb2D.angularVelocity = Random.Range(-dynamics.maxAngularVel, dynamics.maxAngularVel);
     }
 
+    void ApplyImpactDamage(float relVelocity)
+    {
+        // arg should be greater than 0 in case of a collision, so negate it to get the damage
+        // TODO: Generalize this for all entities (since they all have rigidbodies) and make it a function of mass, velocity, and coefficients
+        int dHealth = (int)Mathf.Min(-(relVelocity - basic.impactVelThreshold) * basic.impactDamageMult, 0);
+        IncrementHealth(dHealth);
+    }
+
     void IncrementHealth(int dHealth)
     {
         basic.health += dHealth;
-        if (basic.health < 1)
-        {
-            frag.makeFrags = true;
-        }
     }
 
     public void Fragment()
     {
         // generate fragments
         // scale is based on appearance: asteroid mass / "volume" is conserved but apparent area scales with volume at power of 2/3.
+        // this means that scaleFactor relates to mass/volume with power of 1/3
         if (frag.maxGenerations > 0)
         {
             int frags = Random.Range(2, frag.maxFrags);
-            float scaleFactor = Mathf.Max(-0.1f * frags + 1f, 0.2f); // approximates inverse radical fcn for frags > 2
+            float scaleFactor = Mathf.Max(-0.08f * frags + 0.8f, 0.3f); // approximates inverse radical fcn for frags > 2
 
             // do not spawn frags below a certain size
             if (transform.localScale.x * scaleFactor > frag.minScale)
@@ -171,12 +170,9 @@ public class Asteroid : Entity
 
                     // recursive
                     asteroid.frag.maxGenerations -= 1;
-                    asteroid.basic.health = (int)Mathf.Max(basic.health * scaleFactor, 1);
+                    asteroid.basic.startHealth = (int)Mathf.Max(basic.startHealth * scaleFactor, 1);
 
-                    if (NumberInstantiated >= absoluteLimit)
-                    {
-                        break;
-                    }
+                    if (NumberInstantiated >= absoluteLimit) break;
                 }
             }
         }

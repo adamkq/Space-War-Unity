@@ -26,23 +26,28 @@ public class Waypoint : MonoBehaviour
                 continue;
             }
 
-            // cast ray to wp
-            // rays hit triggers, so it might give a false positive on a certain ray
-            Vector2 direction = wp.gameObject.transform.position - transform.position;
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, direction);
-            // may use gizmos/handles for this bit
-            Debug.DrawLine(transform.position, hit.point, Color.green);
-
-            if (hit.collider == wp.gameObject.GetComponent<CircleCollider2D>())
+            if (WaypointManager.HasLOS(gameObject, wp.gameObject))
             {
+                Vector2 direction = wp.gameObject.transform.position - transform.position;
                 LOSWPs.Add(wp, direction.magnitude);
             }
         }
 
-        Debug.LogFormat("{0} LOS: {1}", name, LOSWPs.Count);
-
         LineRenderer line = GetComponent<LineRenderer>();
         float radius = GetComponent<CircleCollider2D>().radius;
         GetComponent<Highlighter>().DrawPolygon(line, radius, Color.green, 4);
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        foreach (KeyValuePair<Waypoint, float> entry in LOSWPs)
+        {
+            Waypoint wp = entry.Key;
+            Vector2 direction = wp.gameObject.transform.position - transform.position;
+
+            Gizmos.color = Color.green;
+            Gizmos.DrawRay(transform.position, direction);
+        }
+        
     }
 }
