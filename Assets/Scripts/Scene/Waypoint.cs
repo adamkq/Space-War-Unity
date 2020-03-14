@@ -20,13 +20,10 @@ public class Waypoint : MonoBehaviour
 
         foreach (Waypoint wp in allWPs)
         {
-            if (wp.gameObject == gameObject)
-            {
-                // no self-LOS
-                continue;
-            }
+            if (wp.gameObject == gameObject) continue; // no self-LOS
 
-            if (WaypointManager.HasLOS(gameObject, wp.gameObject))
+            // ignore hazards during gameplay but not during pre-game path matrix phase
+            if (WaypointManager.HasLOS(gameObject, wp.gameObject, false))
             {
                 Vector2 direction = wp.gameObject.transform.position - transform.position;
                 LOSWPs.Add(wp, direction.magnitude);

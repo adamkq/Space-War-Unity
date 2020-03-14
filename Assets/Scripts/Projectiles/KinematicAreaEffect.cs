@@ -4,11 +4,15 @@ using UnityEngine;
 
 public class KinematicAreaEffect : MonoBehaviour
 {
+    // select behaviour based on effector type
     private PointEffector2D pe2D;
+    private AreaEffector2D ae2D;
+
     // Start is called before the first frame update
     void Awake()
     {
         pe2D = GetComponent<PointEffector2D>();
+        ae2D = GetComponent<AreaEffector2D>();
     }
 
     private void OnTriggerStay2D(Collider2D collision)
@@ -18,15 +22,22 @@ public class KinematicAreaEffect : MonoBehaviour
         Rigidbody2D rb2Dk = other.GetComponent<Rigidbody2D>();
         if (rb2Dk && rb2Dk.isKinematic)
         {
-            float forceMag = pe2D.forceMagnitude;
-            float pseudoForce;
-            Vector2 relPos = rb2Dk.worldCenterOfMass - (Vector2)transform.position;
+            Vector2 relPos = rb2Dk.worldCenterOfMass - (Vector2)transform.position; 
+            float forceMag = 0f;
+
+            if (pe2D) // inv linear
+            {
+                forceMag = pe2D.forceMagnitude;
+            }
+            else if (ae2D)
+            {
+                forceMag = ae2D.forceMagnitude;
+                // transform rotation relative to up-axis, but ae force angle relative to right axis
+                relPos = Quaternion.AngleAxis(transform.parent.rotation.z + ae2D.forceAngle - 90f, Vector3.forward) * Vector2.up;
+            }
+            
             relPos.Normalize();
-
-            // inv linear
-            pseudoForce = forceMag / Vector3.Magnitude(relPos) * Time.fixedDeltaTime;
-
-            rb2Dk.velocity += relPos * pseudoForce;
+            rb2Dk.velocity += relPos * forceMag * Time.fixedDeltaTime;
         }
     }
 }

@@ -7,7 +7,7 @@ using UnityEngine;
 public class Agent : Entity
 {
     // A general class for player and enemy characters
-    // at the player's whim, an Agent should be able to switch between AI and manual control
+    // at the player's whim, an Agent should be able to switch between AI and manual control TODO
 
     [System.Serializable]
     // Agents will have different ship types to give the game a little more variety
@@ -32,11 +32,12 @@ public class Agent : Entity
     {
         // state
         internal Rigidbody2D rb2D;
-        internal Vector2 accLinear;
-        internal float accAngular;
+        internal Vector2 accLinear = Vector2.zero;
+        internal float accAngular = 0f;
+        public float fwdSpeed = 0f; // derived
 
         // limits
-        public float speedLimit = 20f, accFwdLimit = 10f, accRevLimit = -5f, accTurnLimit = 2f;
+        public float accFwdLimit = 10f, accRevLimit = -5f, accTurnLimit = 2f;
     }
 
 
@@ -64,6 +65,7 @@ public class Agent : Entity
     private void Awake()
     {
         dynamics.rb2D = GetComponent<Rigidbody2D>();
+        Actuate(); // initialize dynamics
     }
 
     protected override void Start()
@@ -82,33 +84,24 @@ public class Agent : Entity
     private void OnCollisionEnter2D(Collision2D collision)
     {
         GameObject other = collision.gameObject;
-        if (other.tag == "Hazard")
+        if (other.CompareTag("Hazard"))
         {
-            if (other.name.Contains("Black Hole"))
-            {
-                IncrementHealth(-50);
-            }
+            if (other.name.Contains("Black Hole")) IncrementHealth(-50);
         }
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
         GameObject other = collision.gameObject;
-        if (other.tag == "Projectile")
+        if (other.CompareTag("Projectile"))
         {
             Projectile proj = other.GetComponent<Projectile>();
-            if (proj.FiredBy && proj.FiredBy.GetComponent<Entity>().team != team)
-            {
-                IncrementHealth(-proj.damage);
-            }
+            if (proj.FiredBy && proj.FiredBy.GetComponent<Entity>().team != team) IncrementHealth(-proj.damage);
         }
     }
 
     void IncrementHealth(int dHealth)
     {
-        if (basic.invuln && dHealth < 0)
-        {
-            return;
-        }
+        if (basic.invuln && dHealth < 0) return;
 
         basic.health += dHealth;
     }
@@ -122,8 +115,9 @@ public class Agent : Entity
 
     void Actuate()
     {
-        // forward
-        dynamics.accLinear = Vector2.Dot(transform.up, dynamics.accLinear) > 0
+        dynamics.fwdSpeed = Vector2.Dot(transform.up, dynamics.rb2D.velocity);
+
+        dynamics.accLinear = dynamics.fwdSpeed > 0
             ? (Vector2)Vector3.ClampMagnitude(dynamics.accLinear, dynamics.accFwdLimit)
             : (Vector2)Vector3.ClampMagnitude(dynamics.accLinear, -dynamics.accRevLimit);
 
@@ -154,7 +148,7 @@ public class Agent : Entity
         // speed vector add: cross(A, B) = AB cos(angle(A,B))
         // do not fire backwards
         Projectile _bullet = bullet.GetComponent<Projectile>();
-        _bullet.speed += Vector2.Dot(transform.up, dynamics.rb2D.velocity);
+        _bullet.speed += dynamics.fwdSpeed;
         _bullet.speed = Mathf.Max(_bullet.speed, 1f);
 
         // ID bullet with Agent

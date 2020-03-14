@@ -8,7 +8,7 @@ public class SpawnPointManager : MonoBehaviour
     // spawnpoints selected based on a) if it is occupied, b) the team it belongs to
     // this class can then choose an appropriate spawner at random.
 
-    private KeyCode[] alphaKeyCodes =
+    private static KeyCode[] alphaKeyCodes =
     {
         KeyCode.Alpha0,
         KeyCode.Alpha1,
@@ -19,12 +19,16 @@ public class SpawnPointManager : MonoBehaviour
         KeyCode.Alpha6
     };
 
-    private SpawnPoint[] spawnPoints;
+    private static SpawnPoint[] spawnPoints;
+    private static Transform parentTransform;
 
     public GameObject asteroid;
     public GameObject enemy;
 
-    // Start is called before the first frame update
+    private void Awake()
+    {
+        parentTransform = transform;
+    }
     void Start()
     {
         // sort all spawns by team
@@ -60,14 +64,13 @@ public class SpawnPointManager : MonoBehaviour
         }
     }
 
-    public GameObject SpawnEntity(GameObject obj, Team team= Team.NoTeam)
+    public static GameObject SpawnEntity(GameObject obj, Team team= Team.NoTeam)
     {
         // https://answers.unity.com/questions/710968/how-to-tell-if-a-gameobject-is-an-instance-or-a-pr.html
         // select a suitable spawner at random (if none, just choose an unsuitable one)
         // Order by priority: 1) Team, 2) Unoccupied, 3) Spawn Delay
         // team 0 is the universal team
-        // TODO: add team status to entities
-        Debug.LogFormat("Spawning {0}, Team {1}", obj.name, team);
+        Debug.LogFormat("Spawning {0} (Team {1})", obj.name, team);
         
 
         GameObject newObj;
@@ -75,8 +78,8 @@ public class SpawnPointManager : MonoBehaviour
         // this requires an instance of the SPM
         if (spawnPoints.Length == 0)
         {
-            newObj = Instantiate(obj, transform);
-            Debug.LogWarningFormat("Object {0} (Team {1}) Instantiated at default point of parent {2}", obj.name, team, name);
+            newObj = Instantiate(obj, parentTransform);
+            Debug.LogWarningFormat("Object {0} (Team {1}) Instantiated at default point", obj.name, team);
         }
         else
         {

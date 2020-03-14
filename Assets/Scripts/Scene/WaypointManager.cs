@@ -7,15 +7,22 @@ public class WaypointManager : MonoBehaviour
 {
     // keep track of the node sequence for a given path
     // first node is the source node index, second is the sink node index
-    private int[,] pathMatrix;
-    private int maxNodes = 1000;
-    
+    private static int[,] pathMatrix;
+    // allows certain functions to be static
+    private static Transform parentTransform;
+
+    // number of waypoints
+    public static int NumberOfWPs { get; private set; }
+
     public bool refresh;
 
     private void OnValidate()
     {
         refresh = false;
-        foreach(Transform child in transform)
+        parentTransform = transform;
+        NumberOfWPs = transform.childCount;
+
+        foreach (Transform child in transform)
         {
             GameObject go = child.gameObject;
             
@@ -23,7 +30,12 @@ public class WaypointManager : MonoBehaviour
             wp.OnValidate();
             go.name = "waypoint" + child.GetSiblingIndex().ToString() + "_" + wp.LOSWPs.Count;
         }
+
+        Debug.Log("Building Waypoint Matrix...");
         BuildPathMatrix();
+        Debug.Log("Matrix Complete");
+
+
     }
     
     private void BuildPathMatrix()
@@ -60,7 +72,6 @@ public class WaypointManager : MonoBehaviour
         // If the search encounters a pre-existing path, it will stop early
         // https://brilliant.org/wiki/a-star-search/
         // https://medium.com/@nicholas.w.swift/easy-a-star-pathfinding-7e6689c7f7b2
-        Debug.LogFormat("A* called for nodes {0}, {1}", source, sink);
 
         // f(n) = g(n) (dist so far) + h(n) (estimated dist to end)
         // if the sub-path has already been found, then h(n) = the known path length
@@ -75,10 +86,9 @@ public class WaypointManager : MonoBehaviour
 
         open.Add(transform.GetChild(source), 0f);
 
-        int i = 0;
-        while (open.Count > 0 && i < maxNodes)
+        while (open.Count > 0 && closed.Count < NumberOfWPs)
         {
-            // find minimum f(n) dictionary
+            // find minimum f(n) in open
             
             Transform current = open.Keys.First();
             float _gN = open[current];
@@ -94,7 +104,6 @@ public class WaypointManager : MonoBehaviour
                 }
             }
 
-            
             closed.Add(current);
 
             // check if at goal
@@ -115,11 +124,6 @@ public class WaypointManager : MonoBehaviour
                     pathMatrix[pi, sink] = ci;
                     pathMatrix[ci, source] = pi;
                     current = parent[current];
-                }
-                print("Back Path:");
-                foreach (var index in path)
-                {
-                    print(index);
                 }
                 return;
             }
@@ -152,27 +156,51 @@ public class WaypointManager : MonoBehaviour
 
             }
             open.Remove(current);
-            i++;
         }
+        // path not found
         Debug.LogWarningFormat("Warning: no path found for waypoints with sibling indexes {0}, {1}", source, sink);
     }
     
-
-    public List<GameObject> GetPath(int source, int sink)
+    public static List<GameObject> GetPath(int source, int sink)
     {
         // the actual points for an agent to navigate, based on sibling index
+        List<GameObject> path = new List<GameObject>();
 
-        return new List<GameObject>();
+        if (!(-1 < source && source < NumberOfWPs) || !(-1 < sink && sink < NumberOfWPs)) return path;
+
+
+        while (source != -1 && source != sink && path.Count < NumberOfWPs)
+        {
+            path.Add(parentTransform.GetChild(source).gameObject);
+            source = pathMatrix[source, sink];
+        }
+        
+        path.Add(parentTransform.GetChild(sink).gameObject);
+
+        return path;
     }
 
-    public int GetClosestWaypointWithLOS(GameObject go)
+    public static int GetClosestWaypointWithLOS(GameObject go)
     {
         // the index of the waypoint closest to an agent with LOS
-        // LOS could be blocked by hazards, so if no nodes are found with LOS, just return the closest node
+        // LOS could be blocked by hazards, so if no nodes are found with LOS, iterate again w/o LOS
         float dist = float.PositiveInfinity;
         int siblingIndex = -1;
 
-        foreach(Transform child in transform)
+        foreach(Transform child in parentTransform)
+        {
+            float _dist = Vector2.Distance(go.transform.position, child.position);
+            if (_dist < dist && HasLOS(go, child.gameObject, false))
+            {
+                dist = _dist;
+                siblingIndex = child.GetSiblingIndex();
+            }
+        }
+
+        if (siblingIndex > -1) return siblingIndex;
+
+        // check for hazards
+        foreach (Transform child in parentTransform)
         {
             float _dist = Vector2.Distance(go.transform.position, child.position);
             if (_dist < dist && HasLOS(go, child.gameObject))
@@ -181,29 +209,53 @@ public class WaypointManager : MonoBehaviour
                 siblingIndex = child.GetSiblingIndex();
             }
         }
+
+        if (siblingIndex == -1)
+        {
+            Debug.LogWarningFormat("Gameobject '{0}' could not find LOS to any waypoint (ignoring hazards) at location {1}", go.name, go.transform.position);
+        }
         return siblingIndex;
     }
 
-    public static bool HasLOS(GameObject go1, GameObject go2)
+    public static bool HasLOS(GameObject go1, GameObject go2, bool ignoreEntities=true)
     {
-        // draw ray from pos1 to pos2
+        // draw ray from go1 to go2
         // go2 must have a collider attached
+        // TODO: Look into collision masking
+
+        if (!(go1 && go2)) return false;
+
         Vector2 direction = go2.transform.position - go1.transform.position;
-        RaycastHit2D hit = Physics2D.Raycast(go1.transform.position, direction);
+        Vector2 hitPoint = go1.transform.position;
+        RaycastHit2D hit;
+        // could have this return the collider to the calling function to avoid this GC call.
+        Collider2D c2D = go2.GetComponent<Collider2D>();
 
-        // rays hit triggers, so continue through triggers that aren't waypoints
-        int maxIterations = 50;
-        while (hit.collider.isTrigger && hit.collider.gameObject != go2 && maxIterations > 0)
+        if (!c2D) return false;
+
+        do
         {
-            maxIterations -= 1;
             // offset the new ray a bit so it doesn't just hit the same trigger repeatedly
-            hit = Physics2D.Raycast(hit.point + direction * 0.0001f, direction);
-        }
+            hit = Physics2D.Raycast(hitPoint + direction * 0.0001f, direction);
+            if (!hit.collider)
+            {
+                // null
+                break;
+            }
+            hitPoint = hit.point;
 
-        if (hit.collider == go2.GetComponent<Collider2D>())
-        {
-            return true;
-        }
-        return false;
+            // rays hit triggers, so continue through these (projectiles, spawnpoints, other such objects)
+            // break if it hits a wall or (hits an entity and entities aren't being ignored)
+
+            if (!hit.collider.isTrigger)
+            {
+
+                if (hit.collider.gameObject.CompareTag("Untagged")) break; // assume anything that isn't a hazard stops the ray
+
+                if (!(ignoreEntities && (hit.collider.gameObject.CompareTag("Hazard") || hit.collider.gameObject.CompareTag("Agent")))) break;
+            }
+        } while (hit.collider != c2D);
+
+        return hit.collider == c2D;
     }
 }

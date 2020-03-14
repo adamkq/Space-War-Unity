@@ -78,6 +78,7 @@
     <Compile Include="Assets\Scripts\Helpers\Summoner.cs" />
     <Compile Include="Assets\Scripts\Projectiles\KinematicAreaEffect.cs" />
     <Compile Include="Assets\Scripts\Projectiles\Projectile.cs" />
+    <Compile Include="Assets\Scripts\Scene\CheckPath.cs" />
     <Compile Include="Assets\Scripts\Scene\GetEdgeColliderFromLine.cs" />
     <Compile Include="Assets\Scripts\Scene\SpawnPoint.cs" />
     <Compile Include="Assets\Scripts\Scene\SpawnPointManager.cs" />

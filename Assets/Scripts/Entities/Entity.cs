@@ -9,7 +9,6 @@ public class Entity : MonoBehaviour
 {
     // https://github.com/JetBrains/resharper-unity/wiki/Performance-critical-context-and-costly-methods
     // https://stackoverflow.com/questions/295104/what-is-the-difference-between-a-field-and-a-property
-    private SpawnPointManager spm;
     private SpriteRenderer spriteRend;
     private Collider2D c2D;
     // dynamic rigidbody?
@@ -21,7 +20,6 @@ public class Entity : MonoBehaviour
 
     protected virtual void Start()
     {
-        spm = GameObject.Find("Spawn Point Mgr").GetComponent<SpawnPointManager>();
         spriteRend = GetComponent<SpriteRenderer>();
         c2D = GetComponent<Collider2D>();
         
@@ -47,7 +45,7 @@ public class Entity : MonoBehaviour
 
     public void Respawn()
     {
-        GameObject newObj = spm.SpawnEntity(gameObject, team);
+        GameObject newObj = SpawnPointManager.SpawnEntity(gameObject, team);
         TrackCamera camera = GameObject.Find("Main Camera").GetComponent<TrackCamera>();
 
         if (camera.target == gameObject)

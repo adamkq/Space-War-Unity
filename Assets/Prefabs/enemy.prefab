@@ -100,7 +100,7 @@ Rigidbody2D:
   m_AngularDrag: 0.05
   m_GravityScale: 0
   m_Material: {fileID: 0}
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
@@ -142,7 +142,7 @@ MonoBehaviour:
     score: 0
     shipType: 0
   dynamics:
-    speedLimit: 10
+    fwdSpeed: 0
     accFwdLimit: 10
     accRevLimit: -5
     accTurnLimit: 2
@@ -171,7 +171,7 @@ MonoBehaviour:
     target: {fileID: 0}
     mission: 0
   guidance:
-    setPointSpeed: 0
+    speedLimit: 10
   autopilot:
     gainThrottle: 10
     gainTurnP: 10

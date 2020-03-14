@@ -24,10 +24,7 @@ public class Projectile : MonoBehaviour
 
     private void Update()
     {
-        if (Time.time - timeFired > lifetime)
-        {
-            Terminate();
-        }
+        if (Time.time - timeFired > lifetime) Terminate();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -35,10 +32,7 @@ public class Projectile : MonoBehaviour
         GameObject other = collision.gameObject;
         // projectile does not collide with Agent that fired it, or "invisible" objects
         // what if FiredBy does not exist?
-        if (other != FiredBy && !exemptTriggers.Contains(other.tag))
-        {
-            Terminate();
-        }
+        if (other != FiredBy && !exemptTriggers.Contains(other.tag)) Terminate();
     }
 
     private void OnTriggerStay2D(Collider2D collision)
