@@ -18,12 +18,11 @@ public class Agent : Entity
     public class Basic
     {
         // basic info for an Agent
-        internal int health;
-        
+        internal bool alive = true;
+
         public bool playerControlled;
-        public bool invuln;
-        public int startHealth;
         public int score = 0;
+        public float respawnDelay = 0f;
         public ShipTypes shipType;
     }
 
@@ -31,10 +30,7 @@ public class Agent : Entity
     public class Dynamics
     {
         // state
-        internal Rigidbody2D rb2D;
-        internal Vector2 accLinear = Vector2.zero;
-        internal float accAngular = 0f;
-        public float fwdSpeed = 0f; // derived
+        internal float accLinear = 0f, accAngular = 0f;
 
         // limits
         public float accFwdLimit = 10f, accRevLimit = -5f, accTurnLimit = 2f;
@@ -62,23 +58,26 @@ public class Agent : Entity
     public Dynamics dynamics;
     public Weapons weapons;
 
-    private void Awake()
+    protected override void Awake()
     {
-        dynamics.rb2D = GetComponent<Rigidbody2D>();
-        Actuate(); // initialize dynamics
+        base.Awake();
     }
 
     protected override void Start()
     {
-        transform.parent = GameObject.Find("Agents").transform;
-        basic.health = basic.startHealth;
         base.Start();
+        transform.parent = GameObject.Find("Agents").transform;
+    }
+
+    protected override void Update()
+    {
+        base.Update();
     }
 
     private void FixedUpdate()
     {
         Actuate();
-        if (basic.health < 1) Kill();
+        if (health < 1) Kill();
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -95,15 +94,11 @@ public class Agent : Entity
         if (other.CompareTag("Projectile"))
         {
             Projectile proj = other.GetComponent<Projectile>();
-            if (proj.FiredBy && proj.FiredBy.GetComponent<Entity>().team != team) IncrementHealth(-proj.damage);
+            if (proj.FiredBy && proj.FiredBy.GetComponent<Entity>().team != team)
+            {
+                IncrementHealth(-proj.damage);
+            }
         }
-    }
-
-    void IncrementHealth(int dHealth)
-    {
-        if (basic.invuln && dHealth < 0) return;
-
-        basic.health += dHealth;
     }
 
     void Kill()
@@ -115,21 +110,17 @@ public class Agent : Entity
 
     void Actuate()
     {
-        dynamics.fwdSpeed = Vector2.Dot(transform.up, dynamics.rb2D.velocity);
-
-        dynamics.accLinear = dynamics.fwdSpeed > 0
-            ? (Vector2)Vector3.ClampMagnitude(dynamics.accLinear, dynamics.accFwdLimit)
-            : (Vector2)Vector3.ClampMagnitude(dynamics.accLinear, -dynamics.accRevLimit);
-
+        dynamics.accLinear = Mathf.Clamp(dynamics.accLinear, dynamics.accRevLimit, dynamics.accFwdLimit);
         dynamics.accAngular = Mathf.Clamp(dynamics.accAngular, -dynamics.accTurnLimit, dynamics.accTurnLimit);
 
         // apply
-        dynamics.rb2D.AddForce(dynamics.accLinear);
-        dynamics.rb2D.AddTorque(dynamics.accAngular);
+        rb2D.AddForce(transform.up * dynamics.accLinear);
+        rb2D.AddTorque(dynamics.accAngular);
 
         // reset
+        dynamics.accLinear = 0f;
         dynamics.accAngular = 0f;
-        dynamics.accLinear = Vector3.zero;
+        
     }
 
     public void FireBullet()
@@ -148,8 +139,7 @@ public class Agent : Entity
         // speed vector add: cross(A, B) = AB cos(angle(A,B))
         // do not fire backwards
         Projectile _bullet = bullet.GetComponent<Projectile>();
-        _bullet.speed += dynamics.fwdSpeed;
-        _bullet.speed = Mathf.Max(_bullet.speed, 1f);
+        _bullet.speed = Mathf.Max(_bullet.speed + Vector2.Dot(transform.up, rb2D.velocity), 1f);
 
         // ID bullet with Agent
         _bullet.FiredBy = gameObject;

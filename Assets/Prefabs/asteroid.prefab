@@ -131,13 +131,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e26a2bd37e5b449592b9fdcc12a4f0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  team: 0
-  sprite: {fileID: 0}
-  spriteColor: {r: 0, g: 0, b: 0, a: 0}
+  sprite: {fileID: 21300000, guid: c2a7d4cf2e71844fc89c98ef47ba8fad, type: 3}
+  spriteColor: {r: 1, g: 1, b: 1, a: 1}
+  invuln: 0
+  startHealth: 8
+  team: 1
   basic:
-    startHealth: 8
     impactDamageMult: 0.5
-    impactVelThreshold: 2
+    impactVelThreshold: -999
   dynamics:
     maxLinearVel: 25
     maxAngularVel: 200

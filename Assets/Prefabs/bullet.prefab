@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 5946398614584998551}
   - component: {fileID: 5946398614584998552}
   - component: {fileID: 7237673854080863272}
-  - component: {fileID: 3294167171402082021}
   - component: {fileID: 5946398614584998549}
   m_Layer: 0
   m_Name: bullet
@@ -120,21 +119,6 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0.1}
   serializedVersion: 2
   m_Radius: 0.13
---- !u!114 &3294167171402082021
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5946398614584998553}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4dd4136b31c804244b7b6d2204698908, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  team: 0
-  sprite: {fileID: 0}
-  spriteColor: {r: 0, g: 0, b: 0, a: 0}
 --- !u!114 &5946398614584998549
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -148,5 +132,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 1
-  speed: 15
+  speed: 20
   lifetime: 30

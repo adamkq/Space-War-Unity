@@ -33,30 +33,18 @@ public class GetEdgeColliderFromLine : MonoBehaviour
 
         ec2D = gameObject.GetComponent<EdgeCollider2D>();
         verts = new Vector2[numVertices + (line.loop ? 1 : 0)];
-        ec2D.edgeRadius = Mathf.Max(0, line.startWidth + wallOffset);
-
-        if (derenderLineOnRuntime)
-        {
-            line.enabled = false;
-        }
+        ec2D.edgeRadius = Mathf.Max(0, line.startWidth/2 + wallOffset);
+        line.enabled = !derenderLineOnRuntime;
 
         for (int i = 0; i < numVertices; i++)
         {
             verts[i] = line.GetPosition(i);
         }
 
-        if (line.loop)
-        {
-            verts[numVertices] = verts[0];
-        }
+        if (line.loop) verts[numVertices] = verts[0];
 
         ec2D.points = verts;
 
-        if (mat2D && !setTriggerColliders)
-        {
-            ec2D.sharedMaterial = mat2D;
-        }
-
+        if (mat2D && !setTriggerColliders) ec2D.sharedMaterial = mat2D;
     }
-        
 }

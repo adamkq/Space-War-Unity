@@ -1,12 +1,16 @@
 ﻿<Properties StartupConfiguration="{7F5DD048-C465-EC96-F085-2233BD0CE1C4}|">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Entities/Agent.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Camera/ParallaxCam.cs">
     <Files>
-      <File FileName="Assets/Scripts/Entities/Agent.cs" Line="26" Column="30" />
-      <File FileName="Assets/Scripts/Entities/AIController.cs" Line="53" Column="36" />
-      <File FileName="Assets/Scripts/Scene/Waypoint.cs" Line="25" Column="88" />
-      <File FileName="Assets/CheckPath.cs" Line="13" Column="1" />
-      <File FileName="Assets/Scripts/Entities/PlayerController.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Scene/SpawnPointManager.cs" Line="72" Column="40" />
+      <File FileName="Assets/Scripts/Entities/Agent.cs" Line="112" Column="6" />
+      <File FileName="Assets/Scripts/Entities/Entity.cs" />
+      <File FileName="Assets/Scripts/Entities/AIController.cs" Line="135" Column="53" />
+      <File FileName="Assets/Scripts/Scene/Waypoint.cs" />
+      <File FileName="Assets/Scripts/Entities/PlayerController.cs" />
+      <File FileName="Assets/Scripts/Entities/Asteroid.cs" Line="112" Column="46" />
+      <File FileName="Assets/Scripts/Helpers/Teleporter.cs" />
+      <File FileName="Assets/Scripts/Scene/WaypointManager.cs" Line="236" Column="1" />
+      <File FileName="Assets/Scripts/Scene/CheckPath.cs" />
+      <File FileName="Assets/Scripts/Camera/ParallaxCam.cs" Line="1" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -14,10 +18,10 @@
           <Node name="Space-War" expanded="True">
             <Node name="Assets" expanded="True">
               <Node name="Scripts" expanded="True">
-                <Node name="Camera" expanded="True" />
-                <Node name="Entities" expanded="True">
-                  <Node name="Agent.cs" selected="True" />
+                <Node name="Camera" expanded="True">
+                  <Node name="ParallaxCam.cs" selected="True" />
                 </Node>
+                <Node name="Entities" expanded="True" />
                 <Node name="Gameplay" expanded="True" />
                 <Node name="Helpers" expanded="True" />
                 <Node name="Projectiles" expanded="True" />
@@ -27,19 +31,11 @@
           </Node>
         </State>
       </Pad>
-      <Pad Id="MonoDevelop.Debugger.WatchPad">
-        <State />
-      </Pad>
-      <Pad Id="MonoDevelop.UnitTesting.TestPad">
-        <State name="__root__">
-          <Node name="Space-War" expanded="True" selected="True" />
-        </State>
-      </Pad>
     </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="6e78e201-c9ec-4efb-b5e4-a5cb9c9f0eee" />
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="5ebd915e-aed8-4cf4-adc3-e7a4a7be02f9" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>

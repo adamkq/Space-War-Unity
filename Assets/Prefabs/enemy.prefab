@@ -142,7 +142,6 @@ MonoBehaviour:
     score: 0
     shipType: 0
   dynamics:
-    fwdSpeed: 0
     accFwdLimit: 10
     accRevLimit: -5
     accTurnLimit: 2
@@ -168,12 +167,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targeting:
-    target: {fileID: 0}
     mission: 0
+    target: {fileID: 0}
+    radius: 20
   guidance:
     speedLimit: 10
   autopilot:
     gainThrottle: 10
-    gainTurnP: 10
-    gainTurnI: 5
+    gainTurnP: 2
+    gainTurnI: 1
     gainTurnD: 0.5

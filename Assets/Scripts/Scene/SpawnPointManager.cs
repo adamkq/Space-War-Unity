@@ -57,11 +57,9 @@ public class SpawnPointManager : MonoBehaviour
                 }
             }
         }
-        if (Input.GetKey(KeyCode.A))
-        {
-            SpawnEntity(asteroid);
-            Debug.LogFormat("Total Asteroids: {0}", Asteroid.NumberInstantiated);
-        }
+        if (Input.GetKey(KeyCode.A)) SpawnEntity(asteroid);
+            
+        else if (Input.GetKeyUp(KeyCode.A)) Debug.LogFormat("Total Asteroids: {0}", Asteroid.NumberInstantiated);
     }
 
     public static GameObject SpawnEntity(GameObject obj, Team team= Team.NoTeam)

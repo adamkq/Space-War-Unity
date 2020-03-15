@@ -20,10 +20,12 @@ public class CheckPath : MonoBehaviour
 
         Debug.LogFormat("Check Path from {0}, {1}:", sourceIndex, sinkIndex);
         List<GameObject> samplePath = WaypointManager.GetPath(sourceIndex, sinkIndex);
+        string s = "";
         foreach (GameObject go in samplePath)
         {
-            Debug.Log(go.transform.GetSiblingIndex());
+            s += go.transform.GetSiblingIndex().ToString() + " ";
         }
+        Debug.Log(s);
     }
 
 }

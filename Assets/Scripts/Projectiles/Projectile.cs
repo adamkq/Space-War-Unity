@@ -11,14 +11,16 @@ public class Projectile : MonoBehaviour
     public int damage = 1;
     public float speed = 10.0f;
     public float lifetime;
+    public float speedDecay = 1f;
 
     public GameObject FiredBy { get; set; }
 
     void Start()
     {
         transform.parent = GameObject.Find("Projectiles").transform;
-        rb2D = GetComponent<Rigidbody2D>();
+        rb2D = GetComponent<Rigidbody2D>(); // kinematic
         rb2D.velocity = transform.up * speed;
+
         timeFired = Time.time;
     }
 

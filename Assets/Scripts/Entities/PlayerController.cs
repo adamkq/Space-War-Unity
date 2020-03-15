@@ -35,17 +35,11 @@ public class PlayerController : MonoBehaviour
         }
         if (Input.GetKey(KeyCode.UpArrow))
         {
-            dyn.accLinear = transform.up * dyn.accFwdLimit;
+            dyn.accLinear = dyn.accFwdLimit;
         }
         else if (Input.GetKey(KeyCode.DownArrow))
         {
-            dyn.accLinear = transform.up * dyn.accRevLimit;
-        }
-
-        // hard brake
-        if (Input.GetKey(KeyCode.B))
-        {
-            dyn.accLinear = dyn.rb2D.velocity * dyn.accRevLimit;
+            dyn.accLinear = dyn.accRevLimit;
         }
     }
 

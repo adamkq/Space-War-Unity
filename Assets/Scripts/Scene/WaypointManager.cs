@@ -111,14 +111,9 @@ public class WaypointManager : MonoBehaviour
             {
                 // sink found, populate pathMatrix with path found in from.
                 // If current is in the pathMatrix and has a path to sink, also return
-
-                List<int> path = new List<int>();
-                
                 while(parent.Keys.Contains(current))
                 {
                     int ci = current.GetSiblingIndex(), pi = parent[current].GetSiblingIndex();
-                    // the parent dict can be backtracked to get the reverse path
-                    path.Add(parent[current].GetSiblingIndex());
                     // path from parent to sink starts with current
                     // path from current to source starts with parent
                     pathMatrix[pi, sink] = ci;
@@ -212,7 +207,7 @@ public class WaypointManager : MonoBehaviour
 
         if (siblingIndex == -1)
         {
-            Debug.LogWarningFormat("Gameobject '{0}' could not find LOS to any waypoint (ignoring hazards) at location {1}", go.name, go.transform.position);
+            Debug.LogWarningFormat("Gameobject '{0}' could not find LOS to any waypoint at location {1}", go.name, go.transform.position);
         }
         return siblingIndex;
     }
@@ -237,20 +232,15 @@ public class WaypointManager : MonoBehaviour
         {
             // offset the new ray a bit so it doesn't just hit the same trigger repeatedly
             hit = Physics2D.Raycast(hitPoint + direction * 0.0001f, direction);
-            if (!hit.collider)
-            {
-                // null
-                break;
-            }
+            if (!hit.collider) break; // null
+
             hitPoint = hit.point;
 
             // rays hit triggers, so continue through these (projectiles, spawnpoints, other such objects)
             // break if it hits a wall or (hits an entity and entities aren't being ignored)
-
             if (!hit.collider.isTrigger)
             {
-
-                if (hit.collider.gameObject.CompareTag("Untagged")) break; // assume anything that isn't a hazard stops the ray
+                if (hit.collider.gameObject.CompareTag("Untagged")) break; // assume anything that is unspecified stops the ray
 
                 if (!(ignoreEntities && (hit.collider.gameObject.CompareTag("Hazard") || hit.collider.gameObject.CompareTag("Agent")))) break;
             }
