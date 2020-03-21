@@ -10,7 +10,7 @@ public class PlayerController : MonoBehaviour
     private Agent agent;
     private Agent.Dynamics dyn;
     
-    void Awake()
+    void Start()
     {
         agent = GetComponent<Agent>();
         dyn = agent.dynamics;

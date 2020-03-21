@@ -20,105 +20,112 @@ public class SpawnPointManager : MonoBehaviour
     };
 
     private static SpawnPoint[] spawnPoints;
-    private static Transform parentTransform;
+    private static GameObject spawnPoint;
+
+    private int enemyIndex; // uniquely name enemies
 
     public GameObject asteroid;
     public GameObject enemy;
 
-    private void Awake()
-    {
-        parentTransform = transform;
-    }
     void Start()
     {
         // sort all spawns by team
         spawnPoints = GetComponentsInChildren<SpawnPoint>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         ManualSpawn();
     }
 
+    
     void ManualSpawn()
     {
+        
+        // manually instantiate entities
         for (int i = 0; i < alphaKeyCodes.Length; i++)
         {
             if (Input.GetKeyDown(alphaKeyCodes[i]))
             {
+                Team team = (Team)i;
                 if (Input.GetKey(KeyCode.LeftShift))
                 {
-                    Destroy(GameObject.Find("enemy"));
+                    Agent[] enemies = GameObject.Find("Agents").GetComponentsInChildren<Agent>();
+                    foreach (Agent enemy in enemies)
+                    {
+                        if (enemy.team == team)
+                        {
+                            Destroy(enemy.gameObject);
+                            break;
+                        }
+                    }
                 }
                 else
                 {
-                    SpawnEntity(enemy, (Team)i);
+                    spawnPoint = GetSpawnPoint(team);
+                    GameObject _enemy = Instantiate(enemy, spawnPoint.transform.position, spawnPoint.transform.rotation);
+                    _enemy.name = "enemy" + enemyIndex.ToString();
+                    
+                    _enemy.GetComponent<Entity>().team = team;
+                    Debug.LogFormat("Spawning {0} (Team {1})", _enemy.name, team);
+
+                    ++enemyIndex;
                 }
             }
         }
-        if (Input.GetKey(KeyCode.A)) SpawnEntity(asteroid);
-            
+        if (Input.GetKey(KeyCode.A))
+        {
+            spawnPoint = GetSpawnPoint();
+            Instantiate(asteroid, spawnPoint.transform.position, spawnPoint.transform.rotation);
+        }
+
         else if (Input.GetKeyUp(KeyCode.A)) Debug.LogFormat("Total Asteroids: {0}", Asteroid.NumberInstantiated);
     }
 
-    public static GameObject SpawnEntity(GameObject obj, Team team= Team.NoTeam)
+    public static GameObject GetSpawnPoint(Team team= Team.NoTeam)
     {
-        // https://answers.unity.com/questions/710968/how-to-tell-if-a-gameobject-is-an-instance-or-a-pr.html
+        // returns a spawnpoint of the specified team (if available)
         // select a suitable spawner at random (if none, just choose an unsuitable one)
         // Order by priority: 1) Team, 2) Unoccupied, 3) Spawn Delay
         // team 0 is the universal team
-        Debug.LogFormat("Spawning {0} (Team {1})", obj.name, team);
-        
 
-        GameObject newObj;
         // if no spawns, instantiate at the parent transform
         // this requires an instance of the SPM
         if (spawnPoints.Length == 0)
         {
-            newObj = Instantiate(obj, parentTransform);
-            Debug.LogWarningFormat("Object {0} (Team {1}) Instantiated at default point", obj.name, team);
+            Debug.LogWarning("No spawn points available.");
+            return null; 
         }
-        else
+ 
+        List<SpawnPoint> spawnsOfTeam = new List<SpawnPoint>();
+        // get list of spawns that match the team and that are unoccupied
+        foreach(var sp in spawnPoints)
         {
-            List<SpawnPoint> spawnsOfTeam = new List<SpawnPoint>();
-            // get list of spawns that match the team and that are unoccupied
-            foreach(var sp in spawnPoints)
+            if (sp.team == team && !sp.IsOccupied())
             {
-                if (sp.team == team && !sp.IsOccupied())
+                spawnsOfTeam.Add(sp);
+            }
+        }
+
+        // if no eligible spawns, add the universal spawns
+        if (spawnsOfTeam.Count == 0 && team != Team.NoTeam)
+        {
+            foreach (var sp in spawnPoints)
+            {
+                if (sp.team == Team.NoTeam)
                 {
                     spawnsOfTeam.Add(sp);
                 }
             }
-
-            // if no eligible spawns, add the universal spawns
-            if (spawnsOfTeam.Count == 0 && team != Team.NoTeam)
-            {
-                foreach (var sp in spawnPoints)
-                {
-                    if (sp.team == Team.NoTeam)
-                    {
-                        spawnsOfTeam.Add(sp);
-                    }
-                }
-            }
-
-            // if still none, add all spawns
-            if (spawnsOfTeam.Count == 0)
-            {
-                spawnsOfTeam = new List<SpawnPoint>(spawnPoints);
-            }
-
-            // choose random spawn from selection
-            Transform tx = spawnsOfTeam[Random.Range(0, spawnsOfTeam.Count)].gameObject.transform;
-
-            newObj = Instantiate(obj, tx.position, tx.rotation);
         }
 
-        // prevent an extra (clone) suffix
-        newObj.name = obj.name;
-        newObj.GetComponent<Entity>().team = team;
+        // if still none, add all spawns
+        if (spawnsOfTeam.Count == 0)
+        {
+            spawnsOfTeam = new List<SpawnPoint>(spawnPoints);
+        }
 
-        return newObj;
+        // choose random spawn from selection
+        return spawnsOfTeam[Random.Range(0, spawnsOfTeam.Count)].gameObject;
     }
 }

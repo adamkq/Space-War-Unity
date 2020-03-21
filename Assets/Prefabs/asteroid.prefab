@@ -133,12 +133,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sprite: {fileID: 21300000, guid: c2a7d4cf2e71844fc89c98ef47ba8fad, type: 3}
   spriteColor: {r: 1, g: 1, b: 1, a: 1}
+  team: 0
   invuln: 0
   startHealth: 8
-  team: 1
   basic:
     impactDamageMult: 0.5
-    impactVelThreshold: -999
+    impactVelThreshold: 0
   dynamics:
     maxLinearVel: 25
     maxAngularVel: 200

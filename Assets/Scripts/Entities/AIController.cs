@@ -32,8 +32,8 @@ public class AIController : MonoBehaviour
         // These are used by other subsystems to actually move the agent
 
         internal Rigidbody2D rb2D; // of target; used by guidance to get closing vel
-        internal Vector2 vel, lineToTgt;
-        internal Team thisTeam;
+        internal Entity entity; // other info
+        internal Vector2 lineToTgt;
 
         public Mission mission;
         public GameObject target; // Agent will home in on this
@@ -45,12 +45,9 @@ public class AIController : MonoBehaviour
     {
         // Finds point (or sequence of points) to go to based on relative target location
         internal List<GameObject> wpsToTarget = new List<GameObject>();
-        // sibling index of wp
-        internal int closestWpToTarget, closestWPToSelf;
-
-        internal bool HasLOSToTarget = false; // can the target be seen (ignoring other entities)?
-        internal Vector2 LOS = Vector3.zero; // position vector to next wp, or to target
-        internal float angleLOS = 0f, setPointSpeed = 0f;
+        internal bool HasLOSToTarget; // can the target be seen (ignoring other entities)?
+        internal Vector2 LOS = Vector2.zero; // position vector to next wp, or to target
+        internal float angleLOS, setPointSpeed;
 
         public float speedLimit = 10f;
     }
@@ -64,7 +61,7 @@ public class AIController : MonoBehaviour
         internal float angleErrorIntegral = 0f;
 
         // forces and autopilot params
-        public float gainThrottle, gainTurnP, gainTurnI, gainTurnD;
+        public float gainThrottle = 10f, gainTurnP = 2f, gainTurnI = 1f, gainTurnD = 0.5f;
     }
 
     public Targeting targeting;
@@ -75,15 +72,19 @@ public class AIController : MonoBehaviour
     {
         agent = GetComponent<Agent>();
         dyn = agent.dynamics;
-        targeting.thisTeam = agent.team; // inherit from entity
     }
 
     // since these fcns involves physics measurements (e.g. rb2D velocities), they are called in FixedUpdate
     void FixedUpdate()
     {
+        if (!agent.alive)
+        {
+            targeting.target = null; // reset on death
+            return;
+        }
         UpdateTargeting();
         UpdateGuidance();
-        UpdateAutopilot();
+        UpdateAutopilot(); // works even without target
         AIFireWeapons();
     }
 
@@ -93,32 +94,36 @@ public class AIController : MonoBehaviour
         // will take mission from a "Team Manager" class (e.g. Hunt, Defend, Find Health, etc, see above)
         // will also keep track of those Agents which are detectable once TODO stealth mechanics are implemented
 
+        // selection
+        // bug: agent waits until its 'dead' target respawns to select a new target
+        if (!targeting.target || !targeting.entity.alive)
+        {
+            // choose at random. Could choose based on distance, ship type, etc
+            Entity[] targets = GameObject.Find("Agents").GetComponentsInChildren<Entity>();
+            List<GameObject> potentialTargets = new List<GameObject>();
+
+            foreach (var t in targets)
+            {
+                // target must a) be alive, b) not be self, c) be on a different team
+                if (t.alive && t.gameObject != gameObject && (t.team != agent.team || t.team == Team.NoTeam))
+                {
+                    potentialTargets.Add(t.gameObject);
+                }
+            }
+            if (potentialTargets.Any())
+            {
+                targeting.target = potentialTargets[Random.Range(0, potentialTargets.Count)];
+                targeting.rb2D = targeting.target.GetComponent<Rigidbody2D>();
+                targeting.entity = targeting.target.GetComponent<Entity>();
+            }
+        }
+
+        // draw line
         if (targeting.target)
         {
-            // presently, only change targets if the previous one is destroyed
             Debug.DrawLine(transform.position, targeting.target.transform.position, Color.blue);
             targeting.lineToTgt = targeting.target.transform.position - transform.position;
-            if (!targeting.rb2D)
-            {
-                targeting.rb2D = targeting.target.GetComponent<Rigidbody2D>();
-            }
-            targeting.vel = targeting.rb2D.velocity;
-            return;
         }
-
-        // choose at random. Could choose based on distance, ship type, etc
-        Entity[] agents = GameObject.Find("Agents").GetComponentsInChildren<Entity>();
-        List<GameObject> potentialTargets = new List<GameObject>();
-
-        foreach (var agent in agents)
-        {
-            if (agent.gameObject != gameObject && (agent.team != targeting.thisTeam || agent.team == Team.NoTeam))
-            {
-                potentialTargets.Add(agent.gameObject);
-            }
-        }
-        targeting.target = potentialTargets[Random.Range(0, potentialTargets.Count)];
-
     }
 
     void UpdateGuidance()
@@ -134,61 +139,60 @@ public class AIController : MonoBehaviour
         //
         // Set Point Speed: If no target, set min. If no LOS to target, set max. If LOS to target and close to target, match speed.
 
-        if (targeting.target && targeting.target.activeSelf)
+        if (!targeting.target)
         {
-            guidance.HasLOSToTarget = WaypointManager.HasLOS(gameObject, targeting.target);
-            guidance.setPointSpeed = guidance.speedLimit;
-
-            if (!guidance.HasLOSToTarget)
-            {
-                // check if the wpList is empty or if self or target do not have LOS to their respective nodes.
-                // this may not necessarily work off of the closest wp with LOS to target but it is faster to
-                // check than getting the closest node on every update.
-                if (!guidance.wpsToTarget.Any() || !WaypointManager.HasLOS(guidance.wpsToTarget.Last(), targeting.target)
-                    || !WaypointManager.HasLOS(guidance.wpsToTarget.First(), gameObject))
-                {
-                    guidance.closestWpToTarget = WaypointManager.GetClosestWaypointWithLOS(targeting.target);
-                    guidance.closestWPToSelf = WaypointManager.GetClosestWaypointWithLOS(gameObject);
-
-                    // if either of the above are -1, this will return an empty list
-                    guidance.wpsToTarget = WaypointManager.GetPath(guidance.closestWPToSelf, guidance.closestWpToTarget);
-                }
-                // prune; if agent can see the next wp, no need for the current wp
-                else if (guidance.wpsToTarget.Count > 1 && WaypointManager.HasLOS(gameObject, guidance.wpsToTarget[1]))
-                {
-                    guidance.wpsToTarget.RemoveAt(0);
-                }
-                if (guidance.wpsToTarget.Any())
-                {
-                    guidance.LOS = guidance.wpsToTarget[0].transform.position - transform.position;
-
-                    Debug.DrawLine(transform.position, guidance.wpsToTarget[0].transform.position, Color.green);
-                    for (int i = 0; i < guidance.wpsToTarget.Count - 1; i++)
-                    {
-                        Debug.DrawLine(guidance.wpsToTarget[i].transform.position, guidance.wpsToTarget[i + 1].transform.position, Color.green);
-                    }
-                }
-            }
-            else
-            {
-                // aim directly at target
-                guidance.LOS = targeting.lineToTgt;
-                // match speed
-                if (targeting.rb2D && guidance.LOS.magnitude < targeting.radius)
-                {
-                    guidance.setPointSpeed = Mathf.Min(guidance.setPointSpeed, targeting.rb2D.velocity.magnitude);
-                }
-            }
-            // cross product
-            guidance.angleLOS = Vector2.Angle(guidance.LOS, transform.up) * Mathf.Sign(-guidance.LOS.x * transform.up.y + guidance.LOS.y * transform.up.x);
-        }
-        else
-        {
+            guidance.HasLOSToTarget = false;
             guidance.wpsToTarget.Clear();
             guidance.LOS = transform.up;
             guidance.angleLOS = 0f;
             guidance.setPointSpeed = Mathf.Min(0.1f, guidance.speedLimit); // idling
+            return;
         }
+        guidance.HasLOSToTarget = WaypointManager.HasLOS(gameObject, targeting.target);
+        guidance.setPointSpeed = guidance.speedLimit;
+
+        if (!guidance.HasLOSToTarget)
+        {
+            // check if the wpList is empty or if self or target do not have LOS to their respective nodes.
+            // this may not necessarily work off of the closest wp with LOS to target but it is faster to
+            // check than getting the closest node on every update.
+            if (!guidance.wpsToTarget.Any() || !WaypointManager.HasLOS(guidance.wpsToTarget.Last(), targeting.target)
+                || !WaypointManager.HasLOS(guidance.wpsToTarget.First(), gameObject))
+            {
+                int closestWpToTarget = WaypointManager.GetClosestWaypointWithLOS(targeting.target);
+                int closestWPToSelf = WaypointManager.GetClosestWaypointWithLOS(gameObject);
+
+                // if either of the above are -1, this will return an empty list
+                guidance.wpsToTarget = WaypointManager.GetPath(closestWPToSelf, closestWpToTarget);
+            }
+            // prune; if agent can see the next wp, no need for the current wp
+            else if (guidance.wpsToTarget.Count > 1 && WaypointManager.HasLOS(gameObject, guidance.wpsToTarget[1]))
+            {
+                guidance.wpsToTarget.RemoveAt(0);
+            }
+            if (guidance.wpsToTarget.Any())
+            {
+                guidance.LOS = guidance.wpsToTarget[0].transform.position - transform.position;
+
+                Debug.DrawLine(transform.position, guidance.wpsToTarget[0].transform.position, Color.green);
+                for (int i = 0; i < guidance.wpsToTarget.Count - 1; i++)
+                {
+                    Debug.DrawLine(guidance.wpsToTarget[i].transform.position, guidance.wpsToTarget[i + 1].transform.position, Color.green);
+                }
+            }
+        }
+        else
+        {
+            // aim directly at target
+            guidance.LOS = targeting.lineToTgt;
+            // match speed
+            if (targeting.rb2D && guidance.LOS.magnitude < targeting.radius)
+            {
+                guidance.setPointSpeed = Mathf.Min(guidance.speedLimit, targeting.rb2D.velocity.magnitude);
+            }
+        }
+        // cross product
+        guidance.angleLOS = Vector2.Angle(guidance.LOS, transform.up) * Mathf.Sign(-guidance.LOS.x * transform.up.y + guidance.LOS.y * transform.up.x);
     }
 
     void UpdateAutopilot()
@@ -200,11 +204,11 @@ public class AIController : MonoBehaviour
         // edge cases
         float angleE = (guidance.HasLOSToTarget || velE.magnitude < 1f) ? guidance.angleLOS : Vector2.Angle(transform.up, velE) * Mathf.Sign(-velE.x * transform.up.y + velE.y * transform.up.x);
 
-        // use Proportional controller to find force
+        // For throttle, use Proportional controller to find force
         // project velE onto transform.up to get the actual pv
         dyn.accLinear = Vector2.Dot(transform.up, velE) * autopilot.gainThrottle;
         
-        // use PID controller to try to dampen oscillations (D) and zero in on target (PI)
+        // For turns, use PID controller to try to dampen oscillations (D) and zero in on target (PI)
         // anti-windup and reset
         if (Mathf.Abs(dyn.accAngular) < dyn.accTurnLimit && Mathf.Abs(angleE) < 45f)
         {
@@ -223,12 +227,9 @@ public class AIController : MonoBehaviour
     void AIFireWeapons()
     {
         // Used by AI-controlled Agent to determine when to fire
-        if (!targeting.target || Mathf.Abs(guidance.angleLOS) > Mathf.Max(agent.weapons.bulletSpread, 5f))
-        {
-            return;
-        }
+        if (!targeting.target || !targeting.entity.alive) return;
 
-        if (WaypointManager.HasLOS(gameObject, targeting.target, false))
+        if (Mathf.Abs(guidance.angleLOS) < Mathf.Max(agent.weapons.bulletSpread, 5f) && WaypointManager.HasLOS(gameObject, targeting.target, false))
         {
             Debug.DrawLine(transform.position, transform.position + transform.up * guidance.LOS.magnitude, Color.red);
             agent.FireBullet();

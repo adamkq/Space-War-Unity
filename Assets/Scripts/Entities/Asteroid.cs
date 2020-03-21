@@ -20,7 +20,6 @@ public class Asteroid : Entity
         public float impactVelThreshold = 0.5f;
     }
     
-
     [System.Serializable]
     public class Dynamics
     {
@@ -89,18 +88,17 @@ public class Asteroid : Entity
     private void OnTriggerEnter2D(Collider2D collision)
     {
         GameObject other = collision.gameObject;
-        if (other.tag == "Projectile")
-        {
-            IncrementHealth(-other.GetComponent<Projectile>().damage);
-        }
+
+        if (other.tag == "Projectile") IncrementHealth(-other.GetComponent<Projectile>().damage);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         GameObject other = collision.gameObject;
-        if (other.tag == "Agent") ApplyImpactDamage(collision.relativeVelocity.magnitude);
 
-        if (!(other.tag == "Hazard")) return;
+        if (other.CompareTag("Agent")) ApplyImpactDamage(collision.relativeVelocity.magnitude);
+
+        if (!other.CompareTag("Hazard")) return;
 
         // inter-asteroid collisions
         if (other.name.Contains("asteroid"))

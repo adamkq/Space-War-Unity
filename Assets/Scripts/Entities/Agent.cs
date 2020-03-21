@@ -18,11 +18,15 @@ public class Agent : Entity
     public class Basic
     {
         // basic info for an Agent
-        internal bool alive = true;
 
+        // used for scoring and targeting
+        internal GameObject lastHitBy;
+        internal GameObject killedBy;
+
+        // settings
         public bool playerControlled;
-        public int score = 0;
-        public float respawnDelay = 0f;
+        public int score = 0; // persists after death
+        public float respawnDelay = 3f;
         public ShipTypes shipType;
     }
 
@@ -35,8 +39,7 @@ public class Agent : Entity
         // limits
         public float accFwdLimit = 10f, accRevLimit = -5f, accTurnLimit = 2f;
     }
-
-
+    
     [System.Serializable]
     public class Weapons
     {
@@ -58,6 +61,21 @@ public class Agent : Entity
     public Dynamics dynamics;
     public Weapons weapons;
 
+    protected override void OnValidate()
+    {
+        base.OnValidate();
+        if (basic.playerControlled)
+        {
+            if (GetComponent<PlayerController>()) GetComponent<PlayerController>().enabled = true;
+            if (GetComponent<AIController>()) GetComponent<AIController>().enabled = false;
+        }
+        if (!basic.playerControlled)
+        {
+            if (GetComponent<PlayerController>()) GetComponent<PlayerController>().enabled = false;
+            if (GetComponent<AIController>()) GetComponent<AIController>().enabled = true;
+        }
+    }
+
     protected override void Awake()
     {
         base.Awake();
@@ -76,6 +94,10 @@ public class Agent : Entity
 
     private void FixedUpdate()
     {
+        if (!alive)
+        {
+            return;
+        }
         Actuate();
         if (health < 1) Kill();
     }
@@ -86,6 +108,8 @@ public class Agent : Entity
         if (other.CompareTag("Hazard"))
         {
             if (other.name.Contains("Black Hole")) IncrementHealth(-50);
+
+            else if (other.name.Contains("Neutron Star")) IncrementHealth(-5);
         }
     }
     private void OnTriggerEnter2D(Collider2D collision)
@@ -93,9 +117,11 @@ public class Agent : Entity
         GameObject other = collision.gameObject;
         if (other.CompareTag("Projectile"))
         {
+            // general projectile damage
             Projectile proj = other.GetComponent<Projectile>();
             if (proj.FiredBy && proj.FiredBy.GetComponent<Entity>().team != team)
             {
+                basic.lastHitBy = proj.FiredBy;
                 IncrementHealth(-proj.damage);
             }
         }
@@ -103,9 +129,17 @@ public class Agent : Entity
 
     void Kill()
     {
-        // TODO: Implement spawn delay
-        Respawn();
-        Destroy(gameObject);
+        if (basic.lastHitBy)
+        {
+            basic.killedBy = basic.lastHitBy;
+            basic.killedBy.GetComponent<Agent>().IncrementScore(100);
+        }
+        else
+        {
+            basic.killedBy = null;
+        }
+        StartCoroutine(RespawnWithDelay(basic.respawnDelay, basic.killedBy));
+        basic.lastHitBy = null;
     }
 
     void Actuate()
@@ -123,10 +157,16 @@ public class Agent : Entity
         
     }
 
+    public void IncrementScore(int dScore)
+    {
+        basic.score += dScore;
+        Debug.LogFormat("{0} New Score: {1}", name, basic.score);
+    }
+
     public void FireBullet()
     {
-        // TODO: take from Queue
-        if (weapons.pacifist || (weapons.bulletROF != 0 && Time.time - weapons.timeLastFired < Mathf.Max(Time.fixedDeltaTime, 1 / weapons.bulletROF)))
+        // TODO: take from pool
+        if (!alive || weapons.pacifist || (weapons.bulletROF != 0 && Time.time - weapons.timeLastFired < Mathf.Max(Time.fixedDeltaTime, 1 / weapons.bulletROF)))
         {
             return;
         }

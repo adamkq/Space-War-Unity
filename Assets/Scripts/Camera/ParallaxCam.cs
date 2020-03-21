@@ -7,7 +7,8 @@ public class ParallaxCam : MonoBehaviour
     Vector3 initialCamPos;
     MeshRenderer meshRend;
     MeshFilter meshFilter;
-    float speedScaleX, speedScaleY;
+    Vector2 speedScale, originalScale;
+    float orthoSize;
 
     public Camera mainCamera;
     public bool anchorToCamera;
@@ -17,16 +18,16 @@ public class ParallaxCam : MonoBehaviour
     void Awake()
     {
         initialCamPos = mainCamera.transform.position;
-        speedScaleX = scrollSpeed / transform.localScale.x;
-        speedScaleY = scrollSpeed / transform.localScale.y;
+        speedScale = new Vector2(scrollSpeed / transform.localScale.x, scrollSpeed / transform.localScale.y); // valid for 'anchor to camera' only
+        originalScale = transform.localScale;
+        Debug.Log(originalScale);
+
+        orthoSize = mainCamera.orthographicSize;
 
         meshRend = GetComponent<MeshRenderer>();
         meshRend.sortingLayerName = "Background";
 
-        if (alphaValue >= 0f)
-        {
-            meshRend.material.color = new Color(1f, 1f, 1f, alphaValue);
-        }
+        if (alphaValue >= 0f) meshRend.material.color = new Color(1f, 1f, 1f, alphaValue);
         
         meshFilter = GetComponent<MeshFilter>();
         // https://answers.unity.com/questions/523289/change-size-of-mesh-at-runtime.html
@@ -43,24 +44,50 @@ public class ParallaxCam : MonoBehaviour
         {
             return;
         }
-        float offsetX, offsetY;
+        Offset();
+
+        Rescale();
+        
+    }
+
+    void Offset()
+    {
         // texture offsets should follow the camera to give the impression of faraway parallax
         // offsets are scaled to the size of the mesh (quad)
 
         // instead of scaling the mesh to the entire level, just fill the camera
         // at speed = 0, the image appears infinitely far
         // at speed = 1, the image appears to be at the same distance as the player being tracked
+        Vector2 camLocation;
         if (anchorToCamera)
         {
-            offsetX = speedScaleX * (mainCamera.transform.position.x);
-            offsetY = speedScaleY * (mainCamera.transform.position.y);
-            transform.Translate(new Vector2(mainCamera.transform.position.x, mainCamera.transform.position.y) - (Vector2)transform.position);
+            camLocation = new Vector2(mainCamera.transform.position.x, mainCamera.transform.position.y);
+            transform.Translate(camLocation - (Vector2)transform.position);
         }
         else
         {
-            offsetX = speedScaleX * (initialCamPos.x - mainCamera.transform.position.x);
-            offsetY = speedScaleY * (initialCamPos.y - mainCamera.transform.position.y);
+            camLocation = new Vector2(initialCamPos.x - mainCamera.transform.position.x, initialCamPos.y - mainCamera.transform.position.y);
         }
-        meshRend.material.mainTextureOffset = new Vector2(offsetX, offsetY);
+        meshRend.material.mainTextureOffset = Vector3.Scale(speedScale, camLocation);
+    }
+
+    void Rescale()
+    {
+        // if the camera position changes, then the tiling and scale of the mesh should also change
+        // rescaling the mesh during runtime causes the shader to derender (or something) so I will change the tiling
+
+        // camera size is proportional to how much scenery it takes in
+        // at speed = 0, the scale should change so that the image size remains the same
+        // at speed = 1, the scale should not change at all (i.e. what happens by default) so that the image gets smaller as the cam moves out & vice versa
+
+        
+        if (mainCamera.orthographicSize == orthoSize)
+        {
+            return;
+        }
+
+        // at speed = 1, new tiling = old tiling
+        meshRend.material.mainTextureScale *= 1/(1 + (1 - scrollSpeed) * (mainCamera.orthographicSize / orthoSize - 1));
+        orthoSize = mainCamera.orthographicSize;
     }
 }
