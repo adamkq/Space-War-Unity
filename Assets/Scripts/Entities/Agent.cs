@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -7,7 +8,6 @@ using UnityEngine;
 public class Agent : Entity
 {
     // A general class for player and enemy characters
-    // at the player's whim, an Agent should be able to switch between AI and manual control TODO
 
     [System.Serializable]
     // Agents will have different ship types to give the game a little more variety
@@ -24,9 +24,13 @@ public class Agent : Entity
         internal GameObject killedBy;
 
         // settings
+        [Tooltip("Toggle between Player and AI controllers (if those components have been added)")]
         public bool playerControlled;
-        public int score = 0; // persists after death
+        [Tooltip("Agent score (persists after death)")]
+        public int score = 0;
+        [Tooltip("Seconds between death and respawn")]
         public float respawnDelay = 3f;
+        [Tooltip("Ship Type. Affects appearance, powerups, weapons, and other abilities.")]
         public ShipTypes shipType;
     }
 
@@ -37,6 +41,7 @@ public class Agent : Entity
         internal float accLinear = 0f, accAngular = 0f;
 
         // limits
+        [Tooltip("Limit the acceleration of the agent.")]
         public float accFwdLimit = 10f, accRevLimit = -5f, accTurnLimit = 2f;
     }
     
@@ -45,12 +50,19 @@ public class Agent : Entity
     {
         // contains and spawns weapon prefabs
         // TODO: Add projectile queue system
-        internal float timeLastFired = float.NegativeInfinity;
+        internal float timeLastFired = float.NegativeInfinity; // rate of fire
+        internal float offset; // gun placement
 
-        public bool pacifist; // disable weapons
+        [Tooltip("Disables weapons.")]
+        public bool pacifist;
+        [Tooltip("Bullet prefab to instantiate/take from object pool.")]
         public GameObject bullet;
-        public float bulletROF; // per second. Enter 0 to fire as fast as possible (once per fixed update)
-        public float bulletSpread; // degrees, either side
+        [Tooltip("Number of guns. Multiplies the ROF.")]
+        public int numberOfGuns = 1;
+        [Tooltip("Bullets per second. Enter 0 to fire as fast as possible (once per fixed update)")]
+        public float bulletROF;
+        [Tooltip("Bullets spread in degrees, either side")]
+        public float bulletSpread;
         public GameObject bomb;
         public uint numberOfBombs;
         public GameObject laser;
@@ -79,6 +91,14 @@ public class Agent : Entity
     protected override void Awake()
     {
         base.Awake();
+        if (c2D.GetType() == typeof(CircleCollider2D))
+        {
+            weapons.offset = GetComponent<CircleCollider2D>().radius;
+        }
+        else if (c2D.GetType() == typeof(BoxCollider2D) || c2D.GetType() == typeof(CapsuleCollider2D))
+        {
+            weapons.offset = GetComponent<BoxCollider2D>().size.x;
+        }
     }
 
     protected override void Start()
@@ -172,16 +192,26 @@ public class Agent : Entity
         }
         weapons.timeLastFired = Time.time;
 
-        // initialize and add spread
-        GameObject bullet = Instantiate(weapons.bullet, transform.position, transform.rotation);
-        bullet.transform.Rotate(new Vector3(0f, 0f, Random.Range(-weapons.bulletSpread, weapons.bulletSpread)));
+        for (int gun = 0; gun < weapons.numberOfGuns; gun++)
+        {
+            // instantiate bullets at different spots on the Agent
+            float offset = (weapons.numberOfGuns < 2) ? 0 : 2 * gun * weapons.offset/(weapons.numberOfGuns - 1) - weapons.offset;
 
-        // speed vector add: cross(A, B) = AB cos(angle(A,B))
-        // do not fire backwards
-        Projectile _bullet = bullet.GetComponent<Projectile>();
-        _bullet.speed = Mathf.Max(_bullet.speed + Vector2.Dot(transform.up, rb2D.velocity), 1f);
+            // initialize and add spread
+            GameObject bullet = Instantiate(weapons.bullet, transform.position + offset * transform.right, transform.rotation);
+            bullet.transform.Rotate(bullet.transform.forward, Random.Range(-weapons.bulletSpread, weapons.bulletSpread));
 
-        // ID bullet with Agent
-        _bullet.FiredBy = gameObject;
+            // speed vector add: cross(A, B) = AB cos(angle(A,B))
+            // do not fire backwards
+            Projectile _bullet = bullet.GetComponent<Projectile>();
+
+            if (_bullet)
+            {
+                _bullet.speed = Mathf.Max(_bullet.speed + Vector2.Dot(transform.up, rb2D.velocity), 1f);
+
+                // ID bullet with Agent
+                _bullet.FiredBy = gameObject;
+            }
+        }
     }
 }

@@ -92,7 +92,6 @@ public class Entity : MonoBehaviour
         {
             Debug.LogFormat("{0} (Team {1}) killed.", name, team);
         }
-        
 
         alive = false;
         Deactivate();
@@ -101,13 +100,14 @@ public class Entity : MonoBehaviour
 
         Debug.LogFormat("Respawning {0} (Team {1}).", name, team);
 
-        health = startHealth;
-        alive = true;
         GameObject spawnPoint = SpawnPointManager.GetSpawnPoint(team);
         rb2D.position = spawnPoint.transform.position;
         rb2D.rotation = spawnPoint.transform.rotation.z;
 
         yield return new WaitForFixedUpdate(); // keeps entity from 'warping' in one frame
+
+        alive = true;
+        health = startHealth;
         Activate(Vector2.zero);
     }
 

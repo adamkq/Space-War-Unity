@@ -1,12 +1,17 @@
 ﻿<Properties StartupConfiguration="{7F5DD048-C465-EC96-F085-2233BD0CE1C4}|">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Scene/SpawnPointManager.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Entities/AIController.cs">
     <Files>
-      <File FileName="Assets/Scripts/Entities/Agent.cs" Line="142" Column="32" />
-      <File FileName="Assets/Scripts/Entities/Entity.cs" Line="89" Column="138" />
-      <File FileName="Assets/Scripts/Camera/ParallaxCam.cs" Line="91" Column="49" />
-      <File FileName="Assets/Scripts/Camera/TrackCamera.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Entities/Asteroid.cs" Line="23" Column="5" />
-      <File FileName="Assets/Scripts/Scene/SpawnPointManager.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/Scene/SpawnPointManager.cs" Line="99" Column="2" />
+      <File FileName="Assets/Scripts/Scene/GetEdgeColliderFromLine.cs" Line="44" Column="36" />
+      <File FileName="Assets/Scripts/Projectiles/Projectile.cs" Line="10" Column="29" />
+      <File FileName="Assets/Scripts/Scene/WallTypes.cs" Line="12" Column="56" />
+      <File FileName="Assets/Scripts/Gameplay/Teams.cs" Line="7" Column="13" />
+      <File FileName="Assets/Scripts/Scene/LineWall.cs" Line="64" Column="25" />
+      <File FileName="Assets/Scripts/Entities/Entity.cs" Line="69" Column="6" />
+      <File FileName="Assets/Scripts/Entities/Agent.cs" Line="210" Column="42" />
+      <File FileName="Assets/Scripts/Scene/WaypointManager.cs" Line="201" Column="33" />
+      <File FileName="Assets/Scripts/Scene/Waypoint.cs" Line="26" Column="74" />
+      <File FileName="Assets/Scripts/Entities/AIController.cs" Line="245" Column="196" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -15,13 +20,13 @@
             <Node name="Assets" expanded="True">
               <Node name="Scripts" expanded="True">
                 <Node name="Camera" expanded="True" />
-                <Node name="Entities" expanded="True" />
+                <Node name="Entities" expanded="True">
+                  <Node name="AIController.cs" selected="True" />
+                </Node>
                 <Node name="Gameplay" expanded="True" />
                 <Node name="Helpers" expanded="True" />
                 <Node name="Projectiles" expanded="True" />
-                <Node name="Scene" expanded="True">
-                  <Node name="SpawnPointManager.cs" selected="True" />
-                </Node>
+                <Node name="Scene" expanded="True" />
               </Node>
             </Node>
           </Node>

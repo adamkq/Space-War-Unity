@@ -178,14 +178,14 @@ public class WaypointManager : MonoBehaviour
     public static int GetClosestWaypointWithLOS(GameObject go)
     {
         // the index of the waypoint closest to an agent with LOS
-        // LOS could be blocked by hazards, so if no nodes are found with LOS, iterate again w/o LOS
+        // LOS could be blocked by hazards, so if no nodes are found with hazards, iterate again w/o hazards
         float dist = float.PositiveInfinity;
         int siblingIndex = -1;
 
         foreach(Transform child in parentTransform)
         {
-            float _dist = Vector2.Distance(go.transform.position, child.position);
-            if (_dist < dist && HasLOS(go, child.gameObject, false))
+            float _dist = (go.transform.position - child.position).sqrMagnitude;
+            if (_dist < dist && HasLOS(go, child.gameObject, false, new HashSet<WallType>() { WallType.EntityPass }))
             {
                 dist = _dist;
                 siblingIndex = child.GetSiblingIndex();
@@ -197,8 +197,8 @@ public class WaypointManager : MonoBehaviour
         // check for hazards
         foreach (Transform child in parentTransform)
         {
-            float _dist = Vector2.Distance(go.transform.position, child.position);
-            if (_dist < dist && HasLOS(go, child.gameObject))
+            float _dist = (go.transform.position - child.position).sqrMagnitude;
+            if (_dist < dist && HasLOS(go, child.gameObject, true, new HashSet<WallType>() { WallType.EntityPass }))
             {
                 dist = _dist;
                 siblingIndex = child.GetSiblingIndex();
@@ -212,7 +212,7 @@ public class WaypointManager : MonoBehaviour
         return siblingIndex;
     }
 
-    public static bool HasLOS(GameObject go1, GameObject go2, bool ignoreEntities=true)
+    public static bool HasLOS(GameObject go1, GameObject go2, bool ignoreEntities = true, HashSet<WallType> exemptWalls = null)
     {
         // draw ray from go1 to go2
         // go2 must have a collider attached
@@ -225,6 +225,7 @@ public class WaypointManager : MonoBehaviour
         RaycastHit2D hit;
         // could have this return the collider to the calling function to avoid this GC call.
         Collider2D c2D = go2.GetComponent<Collider2D>();
+        GameObject goHit;
 
         if (!c2D) return false;
 
@@ -235,14 +236,21 @@ public class WaypointManager : MonoBehaviour
             if (!hit.collider) break; // null
 
             hitPoint = hit.point;
+            goHit = hit.collider.gameObject;
 
             // rays hit triggers, so continue through these (projectiles, spawnpoints, other such objects)
             // break if it hits a wall or (hits an entity and entities aren't being ignored)
             if (!hit.collider.isTrigger)
             {
-                if (hit.collider.gameObject.CompareTag("Untagged")) break; // assume anything that is unspecified stops the ray
+                if (goHit.CompareTag("Untagged")) break; // assume anything that is unspecified stops the ray
 
-                if (!(ignoreEntities && (hit.collider.gameObject.CompareTag("Hazard") || hit.collider.gameObject.CompareTag("Agent")))) break;
+                if (!(ignoreEntities && (goHit.CompareTag("Hazard") || goHit.CompareTag("Agent")))) break;
+            }
+
+            if (goHit.CompareTag("Wall"))
+            {
+                WallType wallType = goHit.GetComponent<LineWall>().wallType;
+                if (!exemptWalls.Contains(wallType)) break;
             }
         } while (hit.collider != c2D);
 

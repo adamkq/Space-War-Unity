@@ -6,8 +6,7 @@ public class ParallaxCam : MonoBehaviour
 {
     Vector3 initialCamPos;
     MeshRenderer meshRend;
-    MeshFilter meshFilter;
-    Vector2 speedScale, originalScale;
+    Vector2 speedScale;
     float orthoSize;
 
     public Camera mainCamera;
@@ -19,8 +18,6 @@ public class ParallaxCam : MonoBehaviour
     {
         initialCamPos = mainCamera.transform.position;
         speedScale = new Vector2(scrollSpeed / transform.localScale.x, scrollSpeed / transform.localScale.y); // valid for 'anchor to camera' only
-        originalScale = transform.localScale;
-        Debug.Log(originalScale);
 
         orthoSize = mainCamera.orthographicSize;
 
@@ -28,13 +25,6 @@ public class ParallaxCam : MonoBehaviour
         meshRend.sortingLayerName = "Background";
 
         if (alphaValue >= 0f) meshRend.material.color = new Color(1f, 1f, 1f, alphaValue);
-        
-        meshFilter = GetComponent<MeshFilter>();
-        // https://answers.unity.com/questions/523289/change-size-of-mesh-at-runtime.html
-        foreach (var v in meshFilter.mesh.vertices)
-        {
-            continue;
-        }
         
     }
 
@@ -61,7 +51,7 @@ public class ParallaxCam : MonoBehaviour
         Vector2 camLocation;
         if (anchorToCamera)
         {
-            camLocation = new Vector2(mainCamera.transform.position.x, mainCamera.transform.position.y);
+            camLocation = mainCamera.transform.position;
             transform.Translate(camLocation - (Vector2)transform.position);
         }
         else

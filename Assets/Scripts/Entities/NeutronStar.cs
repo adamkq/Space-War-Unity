@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class NeutronStar : MonoBehaviour
 {
+    private SpriteRenderer sRend;
     private Rigidbody2D rb2D;
     private CircleCollider2D[] cc2Ds;
     private PointEffector2D[] pe2Ds;
@@ -24,6 +25,7 @@ public class NeutronStar : MonoBehaviour
     {
         starRadius = Mathf.Max(0, starRadius);
 
+        sRend = GetComponentInChildren<SpriteRenderer>();
         cc2Ds = GetComponentsInChildren<CircleCollider2D>();
         pe2Ds = GetComponentsInChildren<PointEffector2D>();
         ae2Ds = GetComponentsInChildren<AreaEffector2D>();
@@ -43,7 +45,9 @@ public class NeutronStar : MonoBehaviour
                 cc2D.radius = starRadius;
             }
         }
-        
+
+        sRend.transform.localScale = new Vector3(2 * starRadius, 2 * starRadius, 1f);
+
         foreach (PointEffector2D pe2D in pe2Ds)
         {
             pe2D.forceMagnitude = -forceMagnitude; // pull

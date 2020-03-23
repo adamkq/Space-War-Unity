@@ -9,6 +9,7 @@ TagManager:
   - Agent
   - Hazard
   - Waypoint
+  - Wall
   layers:
   - Default
   - TransparentFX

@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(CircleCollider2D))]
-
 public class BlackHole : MonoBehaviour
 {
+    private SpriteRenderer sRend;
     private CircleCollider2D[] cc2Ds;
     private ParticleSystem ps;
     private PointEffector2D pe2D;
@@ -16,6 +15,7 @@ public class BlackHole : MonoBehaviour
 
     private void OnValidate()
     {
+        sRend = GetComponentInChildren<SpriteRenderer>();
         cc2Ds = GetComponentsInChildren<CircleCollider2D>();
         ps = GetComponent<ParticleSystem>();
         pe2D = GetComponentInChildren<PointEffector2D>();
@@ -32,6 +32,7 @@ public class BlackHole : MonoBehaviour
             }
         }
 
+        sRend.transform.localScale = new Vector3(2 * singularityRadius, 2 * singularityRadius, 1f);
         pe2D.forceMagnitude = forceMagnitude;
 
         if (ps)

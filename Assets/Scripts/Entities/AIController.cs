@@ -7,7 +7,7 @@ using System.Linq;
 
 public class AIController : MonoBehaviour
 {
-    // Get AI target and find dynamics/weapons commands. Component for agent.
+    // Get target and find dynamics/weapons commands. Component for agent.
     // Debugging Lines color convention: blue = target, green = guidance/autopilot, red = weapons
     private Agent agent;
     private Agent.Dynamics dyn;
@@ -95,7 +95,6 @@ public class AIController : MonoBehaviour
         // will also keep track of those Agents which are detectable once TODO stealth mechanics are implemented
 
         // selection
-        // bug: agent waits until its 'dead' target respawns to select a new target
         if (!targeting.target || !targeting.entity.alive)
         {
             // choose at random. Could choose based on distance, ship type, etc
@@ -115,6 +114,12 @@ public class AIController : MonoBehaviour
                 targeting.target = potentialTargets[Random.Range(0, potentialTargets.Count)];
                 targeting.rb2D = targeting.target.GetComponent<Rigidbody2D>();
                 targeting.entity = targeting.target.GetComponent<Entity>();
+            }
+            else
+            {
+                targeting.target = null;
+                targeting.rb2D = null;
+                targeting.entity = null;
             }
         }
 
@@ -148,7 +153,9 @@ public class AIController : MonoBehaviour
             guidance.setPointSpeed = Mathf.Min(0.1f, guidance.speedLimit); // idling
             return;
         }
-        guidance.HasLOSToTarget = WaypointManager.HasLOS(gameObject, targeting.target);
+
+        // can agent either move to, or shoot, the target
+        guidance.HasLOSToTarget = WaypointManager.HasLOS(gameObject, targeting.target, true, new HashSet<WallType>() { WallType.EntityPass, WallType.ProjectilePass });
         guidance.setPointSpeed = guidance.speedLimit;
 
         if (!guidance.HasLOSToTarget)
@@ -156,8 +163,8 @@ public class AIController : MonoBehaviour
             // check if the wpList is empty or if self or target do not have LOS to their respective nodes.
             // this may not necessarily work off of the closest wp with LOS to target but it is faster to
             // check than getting the closest node on every update.
-            if (!guidance.wpsToTarget.Any() || !WaypointManager.HasLOS(guidance.wpsToTarget.Last(), targeting.target)
-                || !WaypointManager.HasLOS(guidance.wpsToTarget.First(), gameObject))
+            if (!guidance.wpsToTarget.Any() || !WaypointManager.HasLOS(guidance.wpsToTarget.Last(), targeting.target, true, new HashSet<WallType>() { WallType.EntityPass })
+                || !WaypointManager.HasLOS(guidance.wpsToTarget.First(), gameObject, true, new HashSet<WallType>() { WallType.EntityPass }))
             {
                 int closestWpToTarget = WaypointManager.GetClosestWaypointWithLOS(targeting.target);
                 int closestWPToSelf = WaypointManager.GetClosestWaypointWithLOS(gameObject);
@@ -166,7 +173,7 @@ public class AIController : MonoBehaviour
                 guidance.wpsToTarget = WaypointManager.GetPath(closestWPToSelf, closestWpToTarget);
             }
             // prune; if agent can see the next wp, no need for the current wp
-            else if (guidance.wpsToTarget.Count > 1 && WaypointManager.HasLOS(gameObject, guidance.wpsToTarget[1]))
+            else if (guidance.wpsToTarget.Count > 1 && WaypointManager.HasLOS(gameObject, guidance.wpsToTarget[1], true, new HashSet<WallType>() { WallType.EntityPass }))
             {
                 guidance.wpsToTarget.RemoveAt(0);
             }
@@ -191,8 +198,7 @@ public class AIController : MonoBehaviour
                 guidance.setPointSpeed = Mathf.Min(guidance.speedLimit, targeting.rb2D.velocity.magnitude);
             }
         }
-        // cross product
-        guidance.angleLOS = Vector2.Angle(guidance.LOS, transform.up) * Mathf.Sign(-guidance.LOS.x * transform.up.y + guidance.LOS.y * transform.up.x);
+        guidance.angleLOS = Vector2.Angle(guidance.LOS, transform.up) * Mathf.Sign(Vector3.Cross(transform.up, guidance.LOS).z);
     }
 
     void UpdateAutopilot()
@@ -201,11 +207,20 @@ public class AIController : MonoBehaviour
 
         // process error
         Vector2 velE = (Vector2)Vector3.ClampMagnitude(guidance.LOS, guidance.setPointSpeed) - agent.rb2D.velocity;
+        
+        float angleE;
         // edge cases
-        float angleE = (guidance.HasLOSToTarget || velE.magnitude < 1f) ? guidance.angleLOS : Vector2.Angle(transform.up, velE) * Mathf.Sign(-velE.x * transform.up.y + velE.y * transform.up.x);
+        if (Mathf.Min(guidance.setPointSpeed, guidance.LOS.magnitude) < velE.magnitude || velE.magnitude < 2f)
+        {
+            angleE = guidance.angleLOS;
+        }
+        else
+        {
+            angleE = Vector2.Angle(transform.up, velE) * Mathf.Sign(Vector3.Cross(transform.up, velE).z);
+        }
 
         // For throttle, use Proportional controller to find force
-        // project velE onto transform.up to get the actual pv
+        // project velE onto transform.up to get the actual forward velocity
         dyn.accLinear = Vector2.Dot(transform.up, velE) * autopilot.gainThrottle;
         
         // For turns, use PID controller to try to dampen oscillations (D) and zero in on target (PI)
@@ -229,7 +244,7 @@ public class AIController : MonoBehaviour
         // Used by AI-controlled Agent to determine when to fire
         if (!targeting.target || !targeting.entity.alive) return;
 
-        if (Mathf.Abs(guidance.angleLOS) < Mathf.Max(agent.weapons.bulletSpread, 5f) && WaypointManager.HasLOS(gameObject, targeting.target, false))
+        if (Mathf.Abs(guidance.angleLOS) < Mathf.Max(agent.weapons.bulletSpread, 5f) && WaypointManager.HasLOS(gameObject, targeting.target, false, new HashSet<WallType>() { WallType.ProjectilePass }))
         {
             Debug.DrawLine(transform.position, transform.position + transform.up * guidance.LOS.magnitude, Color.red);
             agent.FireBullet();

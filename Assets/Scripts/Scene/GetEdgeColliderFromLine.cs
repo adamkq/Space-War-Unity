@@ -23,9 +23,6 @@ public class GetEdgeColliderFromLine : MonoBehaviour
     public bool derenderLineOnRuntime; // should the line be visible when the game runs?
     public float wallOffset; // increase or decrease the collider size relative to the line
 
-    public PhysicsMaterial2D mat2D; // specify friction or bounce in the material
-
-    // Start is called before the first frame update
     void OnValidate()
     {
         line = GetComponent<LineRenderer>();
@@ -34,7 +31,6 @@ public class GetEdgeColliderFromLine : MonoBehaviour
         ec2D = gameObject.GetComponent<EdgeCollider2D>();
         verts = new Vector2[numVertices + (line.loop ? 1 : 0)];
         ec2D.edgeRadius = Mathf.Max(0, line.startWidth/2 + wallOffset);
-        line.enabled = !derenderLineOnRuntime;
 
         for (int i = 0; i < numVertices; i++)
         {
@@ -45,6 +41,12 @@ public class GetEdgeColliderFromLine : MonoBehaviour
 
         ec2D.points = verts;
 
-        if (mat2D && !setTriggerColliders) ec2D.sharedMaterial = mat2D;
+        // LineWall supersedes this
+        if (!GetComponent<LineWall>()) ec2D.isTrigger = setTriggerColliders;
+    }
+
+    private void Start()
+    {
+        line.enabled = !derenderLineOnRuntime;
     }
 }

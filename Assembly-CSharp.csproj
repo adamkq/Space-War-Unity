@@ -64,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Camera\ParallaxCam.cs" />
+    <Compile Include="Assets\Scripts\Camera\Starfield.cs" />
     <Compile Include="Assets\Scripts\Camera\TrackCamera.cs" />
     <Compile Include="Assets\Scripts\Entities\Agent.cs" />
     <Compile Include="Assets\Scripts\Entities\AIController.cs" />
@@ -81,8 +82,10 @@
     <Compile Include="Assets\Scripts\Projectiles\Projectile.cs" />
     <Compile Include="Assets\Scripts\Scene\CheckPath.cs" />
     <Compile Include="Assets\Scripts\Scene\GetEdgeColliderFromLine.cs" />
+    <Compile Include="Assets\Scripts\Scene\LineWall.cs" />
     <Compile Include="Assets\Scripts\Scene\SpawnPoint.cs" />
     <Compile Include="Assets\Scripts\Scene\SpawnPointManager.cs" />
+    <Compile Include="Assets\Scripts\Scene\Walls.cs" />
     <Compile Include="Assets\Scripts\Scene\Waypoint.cs" />
     <Compile Include="Assets\Scripts\Scene\WaypointManager.cs" />
     <Reference Include="Unity.Timeline.Editor">
