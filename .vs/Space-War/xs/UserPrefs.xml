@@ -1,17 +1,15 @@
 ﻿<Properties StartupConfiguration="{7F5DD048-C465-EC96-F085-2233BD0CE1C4}|">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Entities/AIController.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Scene/LineWall.cs">
     <Files>
-      <File FileName="Assets/Scripts/Scene/SpawnPointManager.cs" Line="99" Column="2" />
-      <File FileName="Assets/Scripts/Scene/GetEdgeColliderFromLine.cs" Line="44" Column="36" />
-      <File FileName="Assets/Scripts/Projectiles/Projectile.cs" Line="10" Column="29" />
-      <File FileName="Assets/Scripts/Scene/WallTypes.cs" Line="12" Column="56" />
-      <File FileName="Assets/Scripts/Gameplay/Teams.cs" Line="7" Column="13" />
-      <File FileName="Assets/Scripts/Scene/LineWall.cs" Line="64" Column="25" />
-      <File FileName="Assets/Scripts/Entities/Entity.cs" Line="69" Column="6" />
-      <File FileName="Assets/Scripts/Entities/Agent.cs" Line="210" Column="42" />
-      <File FileName="Assets/Scripts/Scene/WaypointManager.cs" Line="201" Column="33" />
-      <File FileName="Assets/Scripts/Scene/Waypoint.cs" Line="26" Column="74" />
-      <File FileName="Assets/Scripts/Entities/AIController.cs" Line="245" Column="196" />
+      <File FileName="Assets/Scripts/Entities/Agent.cs" Line="54" Column="78" IsPinned="True" />
+      <File FileName="Assets/Scripts/Scene/GetEdgeColliderFromLine.cs" Line="43" Column="14" />
+      <File FileName="Assets/Scripts/Projectiles/Projectile.cs" Line="23" Column="96" />
+      <File FileName="Assets/Scripts/Entities/Entity.cs" Line="107" Column="30" />
+      <File FileName="Assets/Scripts/Projectiles/Laser.cs" Line="32" Column="9" />
+      <File FileName="Assets/Scripts/Projectiles/Bomb.cs" Line="80" Column="35" />
+      <File FileName="Assets/Scripts/Entities/BlackHole.cs" Line="18" Column="9" />
+      <File FileName="Assets/Scripts/Entities/PlayerController.cs" Line="63" Column="10" />
+      <File FileName="Assets/Scripts/Scene/LineWall.cs" Line="56" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -20,13 +18,13 @@
             <Node name="Assets" expanded="True">
               <Node name="Scripts" expanded="True">
                 <Node name="Camera" expanded="True" />
-                <Node name="Entities" expanded="True">
-                  <Node name="AIController.cs" selected="True" />
-                </Node>
+                <Node name="Entities" expanded="True" />
                 <Node name="Gameplay" expanded="True" />
                 <Node name="Helpers" expanded="True" />
                 <Node name="Projectiles" expanded="True" />
-                <Node name="Scene" expanded="True" />
+                <Node name="Scene" expanded="True">
+                  <Node name="LineWall.cs" selected="True" />
+                </Node>
               </Node>
             </Node>
           </Node>
@@ -36,7 +34,7 @@
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="5ebd915e-aed8-4cf4-adc3-e7a4a7be02f9" />
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="9dba9367-eb2a-4372-9108-fea2b297c800" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>

@@ -52,7 +52,8 @@ public class LineWall : MonoBehaviour
         GameObject other = collision.gameObject;
         if ((wallType == WallType.HotWall || wallType == WallType.Bouncy) && other.CompareTag("Projectile"))
         {
-            if (wallType == WallType.HotWall) other.GetComponent<Projectile>().damage += 1;
+            Projectile proj = other.GetComponentInParent<Projectile>();
+            if (wallType == WallType.HotWall) proj.damage += 1;
             Bounce(other, c2D.sharedMaterial.bounciness);
         }
 
@@ -69,7 +70,7 @@ public class LineWall : MonoBehaviour
         GameObject other = collision.gameObject;
         if (wallType == WallType.ProjectilePass && !other.CompareTag("Projectile"))
         {
-            Bounce(other, c2D.sharedMaterial.bounciness);
+            Displace(other);
         }
     }
 
@@ -88,6 +89,16 @@ public class LineWall : MonoBehaviour
             rb2D.velocity = Vector3.Reflect(rb2D.velocity, inNormal.normalized);
             rb2D.velocity *= elasticity;
             rb2D.isKinematic = wasKinematic;
+        }
+    }
+
+    private void Displace(GameObject other)
+    {
+        Rigidbody2D rb2D = other.GetComponent<Rigidbody2D>();
+        if (rb2D)
+        {
+            Vector2 inNormal = rb2D.position - c2D.ClosestPoint(rb2D.position);
+            rb2D.MovePosition(rb2D.position + 0.1f * inNormal);
         }
     }
 }

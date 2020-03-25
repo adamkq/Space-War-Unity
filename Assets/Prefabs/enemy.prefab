@@ -156,7 +156,7 @@ MonoBehaviour:
     bulletSpread: 3
     bomb: {fileID: 0}
     numberOfBombs: 0
-    laser: {fileID: 0}
+    laser: {fileID: 5066408570203222525, guid: ce236b5c670e24a21a34523f7dc79df0, type: 3}
 --- !u!114 &7468296879618291969
 MonoBehaviour:
   m_ObjectHideFlags: 0

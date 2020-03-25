@@ -74,6 +74,11 @@ public class AIController : MonoBehaviour
         dyn = agent.dynamics;
     }
 
+    private void Update()
+    {
+        AIFireWeapons();
+    }
+
     // since these fcns involves physics measurements (e.g. rb2D velocities), they are called in FixedUpdate
     void FixedUpdate()
     {
@@ -85,7 +90,6 @@ public class AIController : MonoBehaviour
         UpdateTargeting();
         UpdateGuidance();
         UpdateAutopilot(); // works even without target
-        AIFireWeapons();
     }
 
     void UpdateTargeting()
@@ -244,10 +248,21 @@ public class AIController : MonoBehaviour
         // Used by AI-controlled Agent to determine when to fire
         if (!targeting.target || !targeting.entity.alive) return;
 
-        if (Mathf.Abs(guidance.angleLOS) < Mathf.Max(agent.weapons.bulletSpread, 5f) && WaypointManager.HasLOS(gameObject, targeting.target, false, new HashSet<WallType>() { WallType.ProjectilePass }))
+        bool HasLOSProjectile = WaypointManager.HasLOS(gameObject, targeting.target, true, new HashSet<WallType>() { WallType.ProjectilePass });
+
+        if (!HasLOSProjectile) return;
+
+        // bullets
+        if (Mathf.Abs(guidance.angleLOS) < Mathf.Max(agent.weapons.bulletSpread, 5f))
         {
             Debug.DrawLine(transform.position, transform.position + transform.up * guidance.LOS.magnitude, Color.red);
             agent.FireBullet();
+        }
+        
+        // laser
+        if (Mathf.Abs(guidance.angleLOS) < 5f && HasLOSProjectile)
+        {
+            agent.FireLaser();
         }
     }
 }

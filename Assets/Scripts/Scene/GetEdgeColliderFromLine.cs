@@ -14,9 +14,8 @@ public class GetEdgeColliderFromLine : MonoBehaviour
 
     // Assume constant width. Varied line width is stored in an 'animation curve'.
 
-    LineRenderer line;
+    LineRenderer lRend;
     EdgeCollider2D ec2D;
-    int numVertices;
     Vector2[] verts;
 
     public bool setTriggerColliders; // if true, the script will set the colliders as triggers so that the linewall can do something other than physics
@@ -25,19 +24,18 @@ public class GetEdgeColliderFromLine : MonoBehaviour
 
     void OnValidate()
     {
-        line = GetComponent<LineRenderer>();
-        numVertices = line.positionCount;
+        lRend = GetComponent<LineRenderer>();
 
         ec2D = gameObject.GetComponent<EdgeCollider2D>();
-        verts = new Vector2[numVertices + (line.loop ? 1 : 0)];
-        ec2D.edgeRadius = Mathf.Max(0, line.startWidth/2 + wallOffset);
+        verts = new Vector2[lRend.positionCount + (lRend.loop ? 1 : 0)];
+        ec2D.edgeRadius = Mathf.Max(0, lRend.startWidth/2 + wallOffset);
 
-        for (int i = 0; i < numVertices; i++)
+        for (int i = 0; i < lRend.positionCount; i++)
         {
-            verts[i] = line.GetPosition(i);
+            verts[i] = lRend.GetPosition(i);
         }
 
-        if (line.loop) verts[numVertices] = verts[0];
+        if (lRend.loop) verts[lRend.positionCount] = verts[0];
 
         ec2D.points = verts;
 
@@ -47,6 +45,7 @@ public class GetEdgeColliderFromLine : MonoBehaviour
 
     private void Start()
     {
-        line.enabled = !derenderLineOnRuntime;
+        OnValidate();
+        lRend.enabled = !derenderLineOnRuntime;
     }
 }

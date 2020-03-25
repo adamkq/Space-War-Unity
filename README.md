@@ -3,15 +3,18 @@ A space shooter made in Unity 2019.
 
 ## Controls
 * Arrow Keys: Maneuver
+* Space: Fire bullets
+* L: Fire Laser
+* J: E-brake turn
+
 * 0-6: Spawn agents on respective teams (hold shift to remove agents)
 * A: Spawn asteroid
-* Space: fire bullets
 * T: Teleport to mouse location
 * S: Summon (script on gameObject w/ rigidbody)
+* Plus/Minus: Change camera zoom
 
 ## Features To Be Added
 * AI Agents: high level/multiple objectives
-* Better parallax background
 * More weapons
 * Score Objects/Powerups
 * HUD/Radar

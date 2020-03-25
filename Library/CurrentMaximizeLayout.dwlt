@@ -21,10 +21,10 @@ MonoBehaviour:
     y: 30
     width: 1680
     height: 954
-  m_MinSize: {x: 683, y: 444}
-  m_MaxSize: {x: 12008, y: 8044}
+  m_MinSize: {x: 713, y: 494}
+  m_MaxSize: {x: 18008, y: 14044}
   vertical: 0
-  controlID: 116
+  controlID: 52294
 --- !u!114 &2
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -54,16 +54,16 @@ MonoBehaviour:
   m_ShowContextualTools: 0
   m_WindowGUID: d69a67902db7f994ca099bec79d22ce1
   m_Gizmos: 1
-  m_SceneIsLit: 1
+  m_SceneIsLit: 0
   m_SceneLighting: 1
   m_2DMode: 1
   m_isRotationLocked: 0
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 3.8756056, y: -2.3610597, z: -3.7575593}
+    m_Target: {x: -4.4920635, y: 1.5961801, z: -3.3990715}
     speed: 2
-    m_Value: {x: 3.8756056, y: -2.3610597, z: -3.7575593}
+    m_Value: {x: -4.4586787, y: 1.5689954, z: -3.388783}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -96,9 +96,9 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: 0, y: 0, z: 0, w: 1}
   m_Size:
-    m_Target: 32.96505
+    m_Target: 21.691692
     speed: 2
-    m_Value: 32.96505
+    m_Value: 22.089304
   m_Ortho:
     m_Target: 1
     speed: 2
@@ -144,10 +144,10 @@ MonoBehaviour:
     y: 0
     width: 1307
     height: 954
-  m_MinSize: {x: 406, y: 444}
-  m_MaxSize: {x: 8006, y: 8044}
+  m_MinSize: {x: 436, y: 494}
+  m_MaxSize: {x: 14006, y: 14044}
   vertical: 0
-  controlID: 117
+  controlID: 52295
 --- !u!114 &4
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -169,10 +169,10 @@ MonoBehaviour:
     y: 0
     width: 407
     height: 954
-  m_MinSize: {x: 202, y: 344}
-  m_MaxSize: {x: 4002, y: 8044}
+  m_MinSize: {x: 232, y: 494}
+  m_MaxSize: {x: 10002, y: 14044}
   vertical: 1
-  controlID: 15
+  controlID: 52204
 --- !u!114 &5
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -228,9 +228,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: ce2c0000
-      m_LastClickedID: 11470
-      m_ExpandedIDs: 8efbffffda2d0000
+      m_SelectedIDs: 72aa0200
+      m_LastClickedID: 174706
+      m_ExpandedIDs: 9e9ae8ff7eaa0200
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -273,14 +273,14 @@ MonoBehaviour:
     y: 478
     width: 407
     height: 476
-  m_MinSize: {x: 102, y: 122}
-  m_MaxSize: {x: 4002, y: 4022}
-  m_ActualView: {fileID: 9}
+  m_MinSize: {x: 232, y: 272}
+  m_MaxSize: {x: 10002, y: 10022}
+  m_ActualView: {fileID: 8}
   m_Panes:
   - {fileID: 8}
   - {fileID: 9}
-  m_Selected: 1
-  m_LastSelected: 0
+  m_Selected: 0
+  m_LastSelected: 1
 --- !u!114 &8
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -319,20 +319,20 @@ MonoBehaviour:
     m_ShowAllHits: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Scripts/Scene
+    - Assets/Prefabs
   m_ViewMode: 1
   m_StartGridSize: 16
   m_LastFolders:
-  - Assets/Scripts/Scene
+  - Assets/Prefabs
   m_LastFoldersGridSize: 16
   m_LastProjectPath: /Users/adamkq/Documents/Programming/Unity/Space-War
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: 622a0000
-    m_LastClickedID: 10850
-    m_ExpandedIDs: 0000000092290000ac2a0000462c000000ca9a3b
+    m_SelectedIDs: 2e2a0000
+    m_LastClickedID: 10798
+    m_ExpandedIDs: 00000000a0290000b82a0000542c000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -360,7 +360,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 0000000092290000ac2a0000
+    m_ExpandedIDs: 00000000a0290000b82a0000542c000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -385,24 +385,24 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
   m_ListAreaState:
-    m_SelectedInstanceIDs: ea2d0000
-    m_LastClickedInstanceID: 11754
+    m_SelectedInstanceIDs: 72aa0200
+    m_LastClickedInstanceID: 174706
     m_HadKeyboardFocusLastEvent: 1
     m_ExpandedInstanceIDs: c6230000362b00005e2b00002c2a0000fe2a00004e2c0000c62e00007acd0000442a000000000000ce420000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
-      m_Name: LineWall
-      m_OriginalName: LineWall
+      m_Name: 
+      m_OriginalName: 
       m_EditFieldRect:
         serializedVersion: 2
         x: 0
         y: 0
         width: 0
         height: 0
-      m_UserData: 12914
+      m_UserData: 0
       m_IsWaitingForDelay: 0
       m_IsRenaming: 0
-      m_OriginalEventType: 0
+      m_OriginalEventType: 11
       m_IsRenamingFilename: 1
       m_ClientGUIView: {fileID: 7}
     m_CreateAssetUtility:
@@ -465,7 +465,7 @@ MonoBehaviour:
   m_MinSize: {x: 204, y: 444}
   m_MaxSize: {x: 4004, y: 8044}
   vertical: 1
-  controlID: 118
+  controlID: 52296
 --- !u!114 &11
 MonoBehaviour:
   m_ObjectHideFlags: 52

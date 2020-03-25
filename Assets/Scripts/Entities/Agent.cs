@@ -51,7 +51,7 @@ public class Agent : Entity
         // contains and spawns weapon prefabs
         // TODO: Add projectile queue system
         internal float timeLastFired = float.NegativeInfinity; // rate of fire
-        internal float offset; // gun placement
+        internal Vector2 offset; // used to offset projectiles from the agent
 
         [Tooltip("Disables weapons.")]
         public bool pacifist;
@@ -93,11 +93,12 @@ public class Agent : Entity
         base.Awake();
         if (c2D.GetType() == typeof(CircleCollider2D))
         {
-            weapons.offset = GetComponent<CircleCollider2D>().radius;
+            float radius = GetComponent<CircleCollider2D>().radius;
+            weapons.offset = new Vector2(radius, radius);
         }
         else if (c2D.GetType() == typeof(BoxCollider2D) || c2D.GetType() == typeof(CapsuleCollider2D))
         {
-            weapons.offset = GetComponent<BoxCollider2D>().size.x;
+            weapons.offset = GetComponent<BoxCollider2D>().size;
         }
     }
 
@@ -139,7 +140,7 @@ public class Agent : Entity
         {
             // general projectile damage
             Projectile proj = other.GetComponent<Projectile>();
-            if (proj.FiredBy && proj.FiredBy.GetComponent<Entity>().team != team)
+            if (proj && proj.FiredBy && proj.FiredBy.GetComponent<Entity>().team != team)
             {
                 basic.lastHitBy = proj.FiredBy;
                 IncrementHealth(-proj.damage);
@@ -195,7 +196,7 @@ public class Agent : Entity
         for (int gun = 0; gun < weapons.numberOfGuns; gun++)
         {
             // instantiate bullets at different spots on the Agent
-            float offset = (weapons.numberOfGuns < 2) ? 0 : 2 * gun * weapons.offset/(weapons.numberOfGuns - 1) - weapons.offset;
+            float offset = (weapons.numberOfGuns == 1) ? 0 : (2 * gun /(weapons.numberOfGuns - 1) - 1) * weapons.offset.x;
 
             // initialize and add spread
             GameObject bullet = Instantiate(weapons.bullet, transform.position + offset * transform.right, transform.rotation);
@@ -205,6 +206,7 @@ public class Agent : Entity
             // do not fire backwards
             Projectile _bullet = bullet.GetComponent<Projectile>();
 
+            // allow other objects to be fired from here
             if (_bullet)
             {
                 _bullet.speed = Mathf.Max(_bullet.speed + Vector2.Dot(transform.up, rb2D.velocity), 1f);
@@ -212,6 +214,42 @@ public class Agent : Entity
                 // ID bullet with Agent
                 _bullet.FiredBy = gameObject;
             }
+        }
+    }
+
+    public void FireLaser()
+    {
+        if (!alive || weapons.pacifist)
+        {
+            return;
+        }
+
+        GameObject laser = Instantiate(weapons.laser, transform.position + transform.up * weapons.offset.y, transform.rotation);
+
+        Projectile _laser = laser.GetComponent<Projectile>();
+        if (_laser) _laser.FiredBy = gameObject;
+    }
+
+    public void LaunchBomb()
+    {
+        if (!alive || weapons.pacifist)
+        {
+            return;
+        }
+        // TODO: charge shot
+        GameObject bomb = Instantiate(weapons.bomb, transform.position + transform.up * weapons.offset.y, transform.rotation);
+
+        // speed vector add: cross(A, B) = AB cos(angle(A,B))
+        // do not fire backwards
+        Projectile _bomb = bomb.GetComponent<Projectile>();
+
+        // allow other objects to be fired from here
+        if (_bomb)
+        {
+            _bomb.speed = Mathf.Max(_bomb.speed + Vector2.Dot(transform.up, rb2D.velocity), 1f);
+
+            // ID bullet with Agent
+            _bomb.FiredBy = gameObject;
         }
     }
 }

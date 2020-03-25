@@ -18,9 +18,9 @@ public static class Walls
     public static Dictionary<WallType, Color> wallColors = new Dictionary<WallType, Color>
     {
         { WallType.Default, Color.white },
-        { WallType.Bouncy, new Color(1f, 0.75f, 0.75f) }, // pink
-        { WallType.EntityPass, new Color(0.75f, 0.75f, 1f) }, // blue
-        { WallType.ProjectilePass, new Color(1f, 1f, 0.5f) }, // yellow
+        { WallType.Bouncy, new Color(1f, 0.5f, 1f) }, // purple
+        { WallType.EntityPass, new Color(0.25f, 1f, 0.25f) }, // green
+        { WallType.ProjectilePass, new Color(0.25f, 0.25f, 1f) }, // blue
         { WallType.HotWall, new Color(1f, 0.25f, 0.25f) }, // red
     };
 }

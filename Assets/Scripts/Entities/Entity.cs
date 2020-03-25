@@ -22,7 +22,6 @@ public class Entity : MonoBehaviour
     // used for respawns and teleports
     internal bool wasKinematic;
     
-
     public Sprite sprite;
     public Color spriteColor;
 
@@ -30,8 +29,6 @@ public class Entity : MonoBehaviour
 
     public bool invuln;
     public int startHealth;
-
-    
 
     protected virtual void OnValidate()
     {

@@ -247,8 +247,8 @@ LineRenderer:
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 1, g: 1, b: 0.5019608, a: 1}
-      key1: {r: 1, g: 1, b: 0.5019608, a: 1}
+      key0: {r: 0.2509804, g: 0.2509804, b: 1, a: 1}
+      key1: {r: 0.2509804, g: 0.2509804, b: 1, a: 1}
       key2: {r: 0, g: 0, b: 0, a: 0}
       key3: {r: 0, g: 0, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}
@@ -28723,11 +28723,11 @@ GameObject:
   - component: {fileID: 391005308793675295}
   - component: {fileID: 391005308793675264}
   - component: {fileID: 391005308793675292}
+  - component: {fileID: 391005308793675267}
   - component: {fileID: 391005308793675289}
   - component: {fileID: 391005308793675287}
   - component: {fileID: 6719149319002180930}
   - component: {fileID: 391005308793675293}
-  - component: {fileID: 391005308793675267}
   - component: {fileID: 391005308793675266}
   m_Layer: 0
   m_Name: player
@@ -28881,7 +28881,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 2
+      scalar: 3
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -29366,7 +29366,7 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     randomizeRotationDirection: 0
-    maxNumParticles: 20
+    maxNumParticles: 40
     size3D: 0
     rotation3D: 0
     gravityModifier:
@@ -30313,8 +30313,8 @@ ParticleSystem:
         serializedVersion: 2
         m_Curve:
         - serializedVersion: 3
-          time: 0.0033340454
-          value: -0.7567558
+          time: 0
+          value: -0.3513527
           inSlope: 0
           outSlope: 0
           tangentMode: 0
@@ -30322,8 +30322,8 @@ ParticleSystem:
           inWeight: 0.33333334
           outWeight: 0.33333334
         - serializedVersion: 3
-          time: 0.99334717
-          value: 0.29729462
+          time: 1
+          value: -1
           inSlope: 0
           outSlope: 0
           tangentMode: 0
@@ -33501,9 +33501,9 @@ MonoBehaviour:
     numberOfGuns: 2
     bulletROF: 20
     bulletSpread: 3
-    bomb: {fileID: 0}
+    bomb: {fileID: 4506659718015151563, guid: 04eebbbfb46ad44bf810473b7e8fd4b3, type: 3}
     numberOfBombs: 0
-    laser: {fileID: 0}
+    laser: {fileID: 5066408570203222525, guid: ce236b5c670e24a21a34523f7dc79df0, type: 3}
 --- !u!58 &391005308793675292
 CircleCollider2D:
   m_ObjectHideFlags: 0

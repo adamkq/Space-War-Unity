@@ -78,7 +78,10 @@
     <Compile Include="Assets\Scripts\Helpers\Repulsor.cs" />
     <Compile Include="Assets\Scripts\Helpers\Summoner.cs" />
     <Compile Include="Assets\Scripts\Helpers\Teleporter.cs" />
+    <Compile Include="Assets\Scripts\Projectiles\Bomb.cs" />
+    <Compile Include="Assets\Scripts\Projectiles\Bullet.cs" />
     <Compile Include="Assets\Scripts\Projectiles\KinematicAreaEffect.cs" />
+    <Compile Include="Assets\Scripts\Projectiles\Laser.cs" />
     <Compile Include="Assets\Scripts\Projectiles\Projectile.cs" />
     <Compile Include="Assets\Scripts\Scene\CheckPath.cs" />
     <Compile Include="Assets\Scripts\Scene\GetEdgeColliderFromLine.cs" />

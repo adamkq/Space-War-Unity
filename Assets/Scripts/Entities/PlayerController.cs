@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 [RequireComponent(typeof(Agent))]
 
@@ -47,7 +45,7 @@ public class PlayerController : MonoBehaviour
         // e-brake: rotates agent in direction opposite to velocity
         if (Input.GetKey(KeyCode.J))
         {
-            float angle = Vector2.Angle(-rb2D.velocity, transform.up) * Mathf.Sign(Vector3.Cross(-rb2D.velocity, transform.up).z);
+            float angle = (rb2D.velocity.magnitude < 1f) ? 0 : Vector2.Angle(-rb2D.velocity, transform.up) * Mathf.Sign(Vector3.Cross(-rb2D.velocity, transform.up).z);
             dyn.accAngular = -angle * 0.1f - rb2D.angularVelocity * 0.01f;
         }
     }
@@ -58,6 +56,14 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKey(KeyCode.Space))
         {
             agent.FireBullet();
+        }
+        if (Input.GetKey(KeyCode.L))
+        {
+            agent.FireLaser();
+        }
+        if (Input.GetKeyDown(KeyCode.B))
+        {
+            agent.LaunchBomb();
         }
     }
 }

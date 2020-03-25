@@ -39,7 +39,7 @@ public class Highlighter : MonoBehaviour
 
         for (int i = 0; i < line.positionCount; i++)
         {
-            float angle = (float)i * angleIncrement * Mathf.Deg2Rad;
+            float angle = i * angleIncrement * Mathf.Deg2Rad;
             Vector3 pos = new Vector3(transform.position.x + radius * Mathf.Cos(angle), transform.position.y + radius * Mathf.Sin(angle), transform.position.z);
             line.SetPosition(i, pos);
         }
