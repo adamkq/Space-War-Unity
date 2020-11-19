@@ -96,10 +96,10 @@ public class AIController : MonoBehaviour
     {
         // high-level, takes into account other Agent locations, health, objectives, etc
         // will take mission from a "Team Manager" class (e.g. Hunt, Defend, Find Health, etc, see above)
-        // will also keep track of those Agents which are detectable once TODO stealth mechanics are implemented
+        // will also keep track of those Agents which are detectable once TODO stealthiness is implemented
 
         // selection
-        if (!targeting.target || !targeting.entity.alive)
+        if (!targeting.target || !targeting.entity.alive || targeting.entity.team == agent.team)
         {
             // choose at random. Could choose based on distance, ship type, etc
             Entity[] targets = GameObject.Find("Agents").GetComponentsInChildren<Entity>();
@@ -144,7 +144,7 @@ public class AIController : MonoBehaviour
         //          get the closest wpLOS to self
         //          get the wp path and save it
         //      if not, prune the wpList until only one node has LOS
-        // if LOS to target, use the pseudo-Pro Nav code already written
+        // if LOS to target, use the pseudo-PN code already written
         //
         // Set Point Speed: If no target, set min. If no LOS to target, set max. If LOS to target and close to target, match speed.
 

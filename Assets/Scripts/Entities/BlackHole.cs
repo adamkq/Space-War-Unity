@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BlackHole : MonoBehaviour
+public class BlackHole : Entity
 {
-    private SpriteRenderer sRend;
     private CircleCollider2D[] cc2Ds;
     private ParticleSystem ps;
     private PointEffector2D pe2D;
@@ -13,9 +12,11 @@ public class BlackHole : MonoBehaviour
     public float areaEffectRadius = 2f;
     public float forceMagnitude = -25f;
 
-    private void OnValidate()
+    protected override void OnValidate()
     {
-        sRend = GetComponentInChildren<SpriteRenderer>();
+        base.OnValidate();
+        invuln = true;
+
         cc2Ds = GetComponentsInChildren<CircleCollider2D>();
         ps = GetComponent<ParticleSystem>();
         pe2D = GetComponentInChildren<PointEffector2D>();
@@ -47,14 +48,8 @@ public class BlackHole : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        // will likely destroy the object, but this should be called in each relevant object
-    }
-
     private void OnDrawGizmos()
     {
         Gizmos.DrawWireSphere(transform.position, areaEffectRadius);
-        
     }
 }

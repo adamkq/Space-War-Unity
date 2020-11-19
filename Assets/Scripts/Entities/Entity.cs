@@ -11,7 +11,7 @@ public class Entity : MonoBehaviour
     // https://github.com/JetBrains/resharper-unity/wiki/Performance-critical-context-and-costly-methods
     // https://stackoverflow.com/questions/295104/what-is-the-difference-between-a-field-and-a-property
 
-    private SpriteRenderer spriteRend;
+    internal SpriteRenderer sRend;
 
     internal Rigidbody2D rb2D;
     internal Collider2D c2D;
@@ -28,20 +28,22 @@ public class Entity : MonoBehaviour
     public Team team;
 
     public bool invuln;
-    public int startHealth;
+    public int startHealth = 1;
 
     protected virtual void OnValidate()
     {
         startHealth = Mathf.Max(startHealth, 1);
+        sRend = GetComponentInChildren<SpriteRenderer>();
+        ChangeTeamColor();
     }
 
     protected virtual void Awake()
     {
-        spriteRend = GetComponent<SpriteRenderer>();
+        sRend = GetComponentInChildren<SpriteRenderer>();
         rb2D = GetComponent<Rigidbody2D>();
         c2D = GetComponent<Collider2D>();
 
-        if (sprite) spriteRend.sprite = sprite;
+        if (sprite) sRend.sprite = sprite;
 
         health = startHealth;
         alive = true;
@@ -59,12 +61,12 @@ public class Entity : MonoBehaviour
 
     private void ChangeTeamColor()
     {
-        spriteRend.color = (team == Team.NoTeam) ? spriteColor : spriteRend.color = Teams.teamColors[team];
+        if (sprite) sRend.color = (team == Team.NoTeam) ? spriteColor : sRend.color = Teams.teamColors[team];
     }
 
     internal void Deactivate()
     {
-        spriteRend.enabled = false;
+        sRend.enabled = false;
         c2D.enabled = false;
         wasKinematic = rb2D.isKinematic;
         rb2D.isKinematic = true;
@@ -73,7 +75,7 @@ public class Entity : MonoBehaviour
 
     internal void Activate(Vector2 initialVel)
     {
-        spriteRend.enabled = true;
+        sRend.enabled = true;
         c2D.enabled = true;
         rb2D.isKinematic = wasKinematic;
         rb2D.velocity = initialVel;

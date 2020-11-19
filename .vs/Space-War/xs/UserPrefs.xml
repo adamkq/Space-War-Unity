@@ -1,40 +1,18 @@
 ﻿<Properties StartupConfiguration="{7F5DD048-C465-EC96-F085-2233BD0CE1C4}|">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Scene/LineWall.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Scene/GetEdgeColliderFromLine.cs">
     <Files>
-      <File FileName="Assets/Scripts/Entities/Agent.cs" Line="54" Column="78" IsPinned="True" />
-      <File FileName="Assets/Scripts/Scene/GetEdgeColliderFromLine.cs" Line="43" Column="14" />
-      <File FileName="Assets/Scripts/Projectiles/Projectile.cs" Line="23" Column="96" />
-      <File FileName="Assets/Scripts/Entities/Entity.cs" Line="107" Column="30" />
-      <File FileName="Assets/Scripts/Projectiles/Laser.cs" Line="32" Column="9" />
-      <File FileName="Assets/Scripts/Projectiles/Bomb.cs" Line="80" Column="35" />
-      <File FileName="Assets/Scripts/Entities/BlackHole.cs" Line="18" Column="9" />
-      <File FileName="Assets/Scripts/Entities/PlayerController.cs" Line="63" Column="10" />
-      <File FileName="Assets/Scripts/Scene/LineWall.cs" Line="56" Column="1" />
+      <File FileName="Assets/Scripts/Entities/Agent.cs" Line="51" Column="46" IsPinned="True" />
+      <File FileName="Assets/Scripts/Entities/Entity.cs" Line="47" Column="1" IsPinned="True" />
+      <File FileName="Assets/Scripts/Projectiles/Bomb.cs" Line="157" Column="127" IsPinned="True" />
+      <File FileName="Assets/Scripts/Entities/Asteroid.cs" Line="20" Column="44" />
+      <File FileName="Assets/Scripts/Entities/AIController.cs" Line="147" Column="47" />
+      <File FileName="Assets/Scripts/Scene/LineWall.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/Scene/GetEdgeColliderFromLine.cs" Line="1" Column="1" />
     </Files>
-    <Pads>
-      <Pad Id="ProjectPad">
-        <State name="__root__">
-          <Node name="Space-War" expanded="True">
-            <Node name="Assets" expanded="True">
-              <Node name="Scripts" expanded="True">
-                <Node name="Camera" expanded="True" />
-                <Node name="Entities" expanded="True" />
-                <Node name="Gameplay" expanded="True" />
-                <Node name="Helpers" expanded="True" />
-                <Node name="Projectiles" expanded="True" />
-                <Node name="Scene" expanded="True">
-                  <Node name="LineWall.cs" selected="True" />
-                </Node>
-              </Node>
-            </Node>
-          </Node>
-        </State>
-      </Pad>
-    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="9dba9367-eb2a-4372-9108-fea2b297c800" />
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="130b052e-1945-43b1-afb9-c6dab8e4088e" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>

@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NeutronStar : MonoBehaviour
+public class NeutronStar : Entity
 {
-    private SpriteRenderer sRend;
-    private Rigidbody2D rb2D;
     private CircleCollider2D[] cc2Ds;
     private PointEffector2D[] pe2Ds;
     private AreaEffector2D[] ae2Ds;
@@ -21,11 +19,13 @@ public class NeutronStar : MonoBehaviour
     public float effectorDistance = 6f;
     public float forceMagnitude = 50f;
 
-    private void OnValidate()
+    protected override void OnValidate()
     {
+        base.OnValidate();
+        invuln = true;
+
         starRadius = Mathf.Max(0, starRadius);
 
-        sRend = GetComponentInChildren<SpriteRenderer>();
         cc2Ds = GetComponentsInChildren<CircleCollider2D>();
         pe2Ds = GetComponentsInChildren<PointEffector2D>();
         ae2Ds = GetComponentsInChildren<AreaEffector2D>();
@@ -64,9 +64,9 @@ public class NeutronStar : MonoBehaviour
         }
     }
 
-    void Awake()
+    protected override void Awake()
     {
-        rb2D = GetComponent<Rigidbody2D>();
+        base.Awake();
         if (rotationalPeriod != 0)
         {
             rb2D.angularVelocity = 360 / rotationalPeriod;

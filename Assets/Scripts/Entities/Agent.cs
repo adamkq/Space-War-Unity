@@ -49,7 +49,6 @@ public class Agent : Entity
     public class Weapons
     {
         // contains and spawns weapon prefabs
-        // TODO: Add projectile queue system
         internal float timeLastFired = float.NegativeInfinity; // rate of fire
         internal Vector2 offset; // used to offset projectiles from the agent
 
@@ -138,9 +137,21 @@ public class Agent : Entity
         GameObject other = collision.gameObject;
         if (other.CompareTag("Projectile"))
         {
+            // blast damage handled in Bomb script
+            if (other.name.ToLower().Contains("bomb"))
+            {
+                return;
+            }
+
             // general projectile damage
             Projectile proj = other.GetComponent<Projectile>();
-            if (proj && proj.FiredBy && proj.FiredBy.GetComponent<Entity>().team != team)
+            if (proj.FiredBy == gameObject)
+            {
+                return;
+            }
+            Team otherTeam = proj.FiredBy.GetComponent<Entity>().team;
+
+            if (proj && (otherTeam != team || otherTeam == Team.NoTeam))
             {
                 basic.lastHitBy = proj.FiredBy;
                 IncrementHealth(-proj.damage);
@@ -184,9 +195,14 @@ public class Agent : Entity
         Debug.LogFormat("{0} New Score: {1}", name, basic.score);
     }
 
+    public void ApplyBombBlastDamage(int dHealth, GameObject go)
+    {
+        basic.lastHitBy = go;
+        IncrementHealth(dHealth);
+    }
+
     public void FireBullet()
     {
-        // TODO: take from pool
         if (!alive || weapons.pacifist || (weapons.bulletROF != 0 && Time.time - weapons.timeLastFired < Mathf.Max(Time.fixedDeltaTime, 1 / weapons.bulletROF)))
         {
             return;

@@ -4800,7 +4800,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 7e6dd185805114584a40c56ad1a16749, type: 2}
+  - {fileID: 0}
   - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -4874,6 +4874,7 @@ MonoBehaviour:
     pacifist: 0
     bullet: {fileID: 5946398614584998553, guid: 52f58d9ad447b4e6dbaffc9ca1dd34b7,
       type: 3}
+    numberOfGuns: 1
     bulletROF: 20
     bulletSpread: 3
     bomb: {fileID: 0}

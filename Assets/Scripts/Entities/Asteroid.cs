@@ -17,7 +17,7 @@ public class Asteroid : Entity
         [Tooltip("Scales self-damage due to relative velocity.")]
         public float impactDamageMult = 0.5f;
         [Tooltip("Relative velocity for any damage.")]
-        public float impactVelThreshold = 0.5f;
+        public float impactVelThreshold = 2f;
     }
     
     [System.Serializable]
@@ -89,7 +89,7 @@ public class Asteroid : Entity
     {
         GameObject other = collision.gameObject;
 
-        if (other.tag == "Projectile") IncrementHealth(-other.GetComponent<Projectile>().damage);
+        if (other.CompareTag("Projectile") && !other.name.ToLower().Contains("bomb")) IncrementHealth(-other.GetComponent<Projectile>().damage);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

@@ -135,10 +135,10 @@ MonoBehaviour:
   spriteColor: {r: 1, g: 1, b: 1, a: 1}
   team: 0
   invuln: 0
-  startHealth: 8
+  startHealth: 12
   basic:
     impactDamageMult: 0.5
-    impactVelThreshold: 0
+    impactVelThreshold: 2
   dynamics:
     maxLinearVel: 25
     maxAngularVel: 200

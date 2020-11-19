@@ -4,6 +4,7 @@ A space shooter made in Unity 2019.
 ## Controls
 * Arrow Keys: Maneuver
 * Space: Fire bullets
+* B: Launch Bomb
 * L: Fire Laser
 * J: E-brake turn
 
@@ -18,7 +19,6 @@ A space shooter made in Unity 2019.
 * More weapons
 * Score Objects/Powerups
 * HUD/Radar
-* Environmental Hazards
 * Main Menu/UI
 * Additional Game Modes
 * Splitscreen 2P

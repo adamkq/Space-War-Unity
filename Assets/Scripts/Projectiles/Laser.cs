@@ -58,6 +58,8 @@ public class Laser : Projectile
         {
             lRend.SetPosition(pt, beam[pt]);
         }
+        // flicker
+        lRend.startColor = new Color(1f, 0f, 0f, Random.Range(0.5f, 1f));
     }
 
     public Collider2D GetBeam()
@@ -185,7 +187,7 @@ public class Laser : Projectile
                     // reflect laser
                     if (wallType == WallType.Bouncy || wallType == WallType.HotWall)
                     {
-                        if (wallType == WallType.HotWall) damage += 1; // the LineWall script does not detect laser collisions
+                        if (wallType == WallType.HotWall) damage += 1; // Hot Walls add damage. The LineWall script does not detect laser collisions so must be done here
 
                         Vector2 offCollider = hitPoint - 1f * direction;
                         Vector2 inNormal = offCollider - hit.collider.ClosestPoint(offCollider);
@@ -196,7 +198,16 @@ public class Laser : Projectile
                 }
 
                 // base case; terminate laser
-                if (!hit.collider.isTrigger) break;
+                if (!hit.collider.isTrigger)
+                {
+                    // Bomb script has trouble detecting laser collisions. Damage is applied to bomb from here instead.
+                    if (hit.collider.gameObject.name.Contains("bomb"))
+                    {
+                        Bomb bomb = hit.collider.gameObject.GetComponent<Bomb>();
+                        bomb.IncrementHealth(-damage);
+                    }
+                    break;
+                }
 
                 // black hole entry. Rotate beam towards the singularity
                 if (goHit.CompareTag("AreaEffect") && goHit.transform.parent.gameObject.name.ToLower().Contains("black hole"))
