@@ -8,8 +8,6 @@ using UnityEngine;
 
 public class Entity : MonoBehaviour
 {
-    // https://github.com/JetBrains/resharper-unity/wiki/Performance-critical-context-and-costly-methods
-    // https://stackoverflow.com/questions/295104/what-is-the-difference-between-a-field-and-a-property
 
     internal SpriteRenderer sRend;
 
@@ -32,9 +30,7 @@ public class Entity : MonoBehaviour
 
     protected virtual void OnValidate()
     {
-        startHealth = Mathf.Max(startHealth, 1);
         sRend = GetComponentInChildren<SpriteRenderer>();
-        ChangeTeamColor();
     }
 
     protected virtual void Awake()
@@ -51,6 +47,7 @@ public class Entity : MonoBehaviour
 
     protected virtual void Start()
     {
+        startHealth = Mathf.Max(startHealth, 1);
         ChangeTeamColor();
     }
 
@@ -61,7 +58,11 @@ public class Entity : MonoBehaviour
 
     private void ChangeTeamColor()
     {
-        if (sprite) sRend.color = (team == Team.NoTeam) ? spriteColor : sRend.color = Teams.teamColors[team];
+        // fixes odd bug where Asteroid keeps calling the OnValidate fcn
+        if (sprite && !gameObject.name.Contains("asteroid"))
+        {
+            sRend.color = (team == Team.NoTeam) ? spriteColor : sRend.color = Teams.teamColors[team];
+        }
     }
 
     internal void Deactivate()

@@ -15,6 +15,7 @@ public class SpawnPoint : MonoBehaviour
     // set to NoTeam to allow any team to access
     public Team team = Team.NoTeam;
     public float radius = 1f;
+    public bool ReValidate;
 
     // Start is called before the first frame update
     void Start()

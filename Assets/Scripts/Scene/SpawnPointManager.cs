@@ -37,7 +37,6 @@ public class SpawnPointManager : MonoBehaviour
     {
         ManualSpawn();
     }
-
     
     void ManualSpawn()
     {
@@ -55,6 +54,7 @@ public class SpawnPointManager : MonoBehaviour
                     {
                         if (enemy.team == team)
                         {
+                            Debug.LogFormat("Despawning {0} (Team {1})", enemy.name, team);
                             Destroy(enemy.gameObject);
                             break;
                         }

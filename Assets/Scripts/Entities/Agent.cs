@@ -11,7 +11,6 @@ public class Agent : Entity
 
     [System.Serializable]
     // Agents will have different ship types to give the game a little more variety
-    // These will be distinguished by sprite and by parameter values rather than being split into classes
     public enum ShipTypes { Assault, Sentry, Infiltrator, Mechanic, Sapper };
 
     [System.Serializable]
@@ -62,6 +61,7 @@ public class Agent : Entity
         public float bulletROF;
         [Tooltip("Bullets spread in degrees, either side")]
         public float bulletSpread;
+        public AudioClip bulletSound;
         public GameObject bomb;
         public uint numberOfBombs;
         public GameObject laser;
@@ -71,6 +71,9 @@ public class Agent : Entity
     public Basic basic;
     public Dynamics dynamics;
     public Weapons weapons;
+
+    // to be used with different game modes eventually
+    private readonly int scoreEventKill = 100;
 
     protected override void OnValidate()
     {
@@ -105,6 +108,7 @@ public class Agent : Entity
     {
         base.Start();
         transform.parent = GameObject.Find("Agents").transform;
+        ScoreManager.UpdateCount(gameObject);
     }
 
     protected override void Update()
@@ -145,10 +149,13 @@ public class Agent : Entity
 
             // general projectile damage
             Projectile proj = other.GetComponent<Projectile>();
-            if (proj.FiredBy == gameObject)
+
+            // ignore if fired by this agent, or if the agent that fired the bullet is destroyed
+            if (proj.FiredBy == gameObject || proj.FiredBy == null)
             {
                 return;
             }
+
             Team otherTeam = proj.FiredBy.GetComponent<Entity>().team;
 
             if (proj && (otherTeam != team || otherTeam == Team.NoTeam))
@@ -164,7 +171,7 @@ public class Agent : Entity
         if (basic.lastHitBy)
         {
             basic.killedBy = basic.lastHitBy;
-            basic.killedBy.GetComponent<Agent>().IncrementScore(100);
+            basic.killedBy.GetComponent<Agent>().IncrementScore(scoreEventKill);
         }
         else
         {
@@ -192,6 +199,7 @@ public class Agent : Entity
     public void IncrementScore(int dScore)
     {
         basic.score += dScore;
+        ScoreManager.UpdateScore(gameObject, dScore);
         Debug.LogFormat("{0} New Score: {1}", name, basic.score);
     }
 
@@ -230,7 +238,10 @@ public class Agent : Entity
                 // ID bullet with Agent
                 _bullet.FiredBy = gameObject;
             }
+
         }
+        // sound outside the loop. Play sound in front of the camera to mitigate "panning" L/R effect.
+        if (weapons.bulletSound) AudioSource.PlayClipAtPoint(weapons.bulletSound, new Vector3(transform.position.x, transform.position.y, Camera.main.transform.position.z + 5f), 0.5f);
     }
 
     public void FireLaser()
@@ -267,5 +278,12 @@ public class Agent : Entity
             // ID bullet with Agent
             _bomb.FiredBy = gameObject;
         }
+    }
+
+    private void OnDestroy()
+    {
+        // subtract score upon deletion
+        ScoreManager.UpdateScore(gameObject, -basic.score);
+        ScoreManager.UpdateCount(gameObject, true);
     }
 }

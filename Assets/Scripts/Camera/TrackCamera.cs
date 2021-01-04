@@ -50,7 +50,6 @@ public class TrackCamera : MonoBehaviour
 
     void ChangeOrthographicSize(float inc)
     {
-        // TODO resize parallax background when this is called
         mainCamera.orthographicSize = Mathf.Clamp(mainCamera.orthographicSize + inc, 5.0f, 20.0f);
     }
 

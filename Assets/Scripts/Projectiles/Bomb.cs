@@ -6,27 +6,27 @@ public class Bomb : Projectile
 {
     
     private CircleCollider2D[] cc2Ds;
-    private Dictionary<GameObject, Team> objectsInBlastZone;
     private int health;
-    private Team team;
-    
-    public int startHealth = 1;
+
+    public Team team;
+    public bool noDamageFallOff;
+    public int startHealth = 5;
     public float bombRadius = 0.5f; // radius of the actual bomb object
     public float triggerRadius = 3f; // will detonate when agent comes within this distance
     public float blastRadius = 8f; // will apply force and damage to objects within this distance
-    public float blastForce = 100f;
-    public bool noDamageFallOff;
+    public float blastForce = 999f; // maximum force exerted. Force must be high since it is only applied for 1 frame.
+    public AudioClip explosionSound;
 
-    protected virtual void OnValidate()
+    void OnValidate()
     {
         startHealth = Mathf.Max(startHealth, 1);
         cc2Ds = GetComponents<CircleCollider2D>();
 
         foreach (CircleCollider2D cc2D in cc2Ds)
         {
-            if (cc2D.isTrigger) // blast
+            if (cc2D.isTrigger) // trigger
             {
-                cc2D.radius = blastRadius;
+                cc2D.radius = triggerRadius;
             }
             else // actual bomb
             {
@@ -42,40 +42,14 @@ public class Bomb : Projectile
         rb2D.velocity = transform.up * speed;
         rb2D.isKinematic = false;
 
-        objectsInBlastZone = new Dictionary<GameObject, Team>();
         health = startHealth;
 
         if (FiredBy) team = FiredBy.GetComponent<Agent>().team;
     }
 
-    // Update is called once per frame
-    protected override void Update()
-    {
-        
-    }
-
     private void FixedUpdate()
     {
-        if (health < 1) Detonate();
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        GameObject other = collision.gameObject;
-        // entities; all can have forces applied to them, but only some can suffer damage
-        if (collision.CompareTag("Agent") || collision.CompareTag("Hazard"))
-        {
-            objectsInBlastZone.Add(other, other.GetComponent<Entity>().team);
-        }
-
-        // only track other bombs for chain-reaction purposes. won't worry about tracking bullets or lasers
-        else if (other.CompareTag("Projectile") && other.name.ToLower().Contains("bomb"))
-        {
-            if (!objectsInBlastZone.ContainsKey(other))
-            {
-                objectsInBlastZone.Add(other, other.GetComponent<Bomb>().team);
-            } 
-        }
+        if (health < 1) StartCoroutine(Detonate());
     }
 
     // called for every object in the blast zone, so no need to loop
@@ -83,20 +57,24 @@ public class Bomb : Projectile
     // bullet and laser hits are triggers, not collisions, so must be handled here
     private void OnTriggerStay2D(Collider2D collision)
     {
-        if (collision.CompareTag("Agent") && Vector2.Distance(transform.position, collision.transform.position) < triggerRadius)
+        if (collision.CompareTag("Agent"))
         {
+            
+            // no-self triggering, but can damage other NoTeam players
             if (collision.gameObject == FiredBy)
             {
                 return;
             }
-            if (objectsInBlastZone.ContainsKey(collision.gameObject))
+            
+            Team otherTeam = collision.gameObject.GetComponent<Entity>().team;
+            if (otherTeam != team || otherTeam == Team.NoTeam)
             {
-                if (objectsInBlastZone[collision.gameObject] != team || objectsInBlastZone[collision.gameObject] == Team.NoTeam) Detonate();
+                IncrementHealth(-999);
             }
         }
 
         float dist = Vector2.Distance(transform.position, collision.transform.position);
-
+        
         if (collision.name.ToLower().Contains("bullet") && dist < bombRadius)
         {
             // damage from bullets; teams can destory their own bombs
@@ -105,24 +83,11 @@ public class Bomb : Projectile
         }
     }
 
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        // remove object from collection of objects in blast zone
-        GameObject other = collision.gameObject;
-        objectsInBlastZone.Remove(other);
-    }
-
     // BH and NS collisions
     private void OnCollisionEnter2D(Collision2D collision)
     {
         GameObject other = collision.gameObject;
-        if (other.CompareTag("Hazard") && !other.name.ToLower().Contains("asteroid")) Detonate();
-
-        if (other.name.ToLower().Contains("laser"))
-        {
-            Debug.Log("laser");
-        }
-
+        if (other.CompareTag("Hazard") && !other.name.ToLower().Contains("asteroid")) IncrementHealth(-999);
     }
 
     public void IncrementHealth(int dHealth)
@@ -131,38 +96,20 @@ public class Bomb : Projectile
     }
 
     // apply blast force and damage to objects
-    void Detonate()
+    internal IEnumerator Detonate()
     {
-        
-        Rigidbody2D rb2DBlast;
-        Vector2 relPos;
-        int blastDamage;
+        // facilitates chain-explosions
+        yield return new WaitForSeconds(Random.Range(0.05f,0.5f));
 
-        foreach (var obj in objectsInBlastZone)
-        {
-            // blast force; only objects w/ RBs are tracked, so no need to check if each one has an RB
-            if (!obj.Key)
-            {
-                continue;
-            }
-            rb2DBlast = obj.Key.GetComponent<Rigidbody2D>();
-            relPos = rb2DBlast.position - (Vector2)transform.position;
-            rb2DBlast.AddForce(relPos.normalized * blastForce / relPos.magnitude, ForceMode2D.Impulse);
+        // Play sound in front of the camera to mitigate "panning" L / R effect.
+        if (explosionSound) AudioSource.PlayClipAtPoint(explosionSound, new Vector3(transform.position.x, transform.position.y, Camera.main.transform.position.z + 5f), 0.9f);
 
-            // damage; agents track who they were last hit by, so they need a special function
-            if (obj.Key != FiredBy && (obj.Value != team || obj.Value == Team.NoTeam))
-            {
-                blastDamage = noDamageFallOff ? damage : Mathf.FloorToInt(damage / relPos.magnitude);
-                if (obj.Key.CompareTag("Hazard")) obj.Key.GetComponent<Entity>().IncrementHealth(-blastDamage);
-                else if (obj.Key.CompareTag("Agent")) obj.Key.GetComponent<Agent>().ApplyBombBlastDamage(-blastDamage, FiredBy);
-            }
+        GameObject _bombBlast = gameObject.transform.GetChild(0).gameObject;
+        CircleCollider2D cc2D = _bombBlast.GetComponent<CircleCollider2D>();
+        cc2D.enabled = true;
 
-            // chain reaction
-            if (obj.Key.CompareTag("Projectile") && obj.Key.name.ToLower().Contains("bomb"))
-            {
-                obj.Key.GetComponent<Bomb>().IncrementHealth(-999);
-            }
-        }
+        yield return new WaitForFixedUpdate();
+
         Destroy(gameObject);
     }
 }
