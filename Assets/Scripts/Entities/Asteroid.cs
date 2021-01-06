@@ -41,6 +41,8 @@ public class Asteroid : Entity
         public float minScale = 0.2f;
     }
 
+    [SerializeField] private Sprite[] sprites;
+
     public Basic basic;
     public Dynamics dynamics;
     public Fragmentation frag;
@@ -60,6 +62,12 @@ public class Asteroid : Entity
         {
             Debug.LogWarningFormat("Max number of asteroids ({0}) instantiated. Destroying asteroid.", absoluteLimit);
             Destroy(gameObject);
+        }
+
+        // give the asteroids different appearances
+        if (sprites.Length > 0)
+        {
+            sRend.sprite = sprites[Random.Range(0, sprites.Length - 0)];
         }
     }
 

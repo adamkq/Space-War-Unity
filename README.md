@@ -18,8 +18,4 @@ A space shooter made in Unity 2019.
 * Tab: Hide/Show team scoreboard
 
 ## Features To Be Added
-* Main Menu/UI
-* Additional Game Modes
-* AI Agents: high level/multiple objectives
-* HUD/Radar
-* Minimap
+* New & randomized sprites for certain objects
